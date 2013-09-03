@@ -22,11 +22,7 @@ if _VERSION == "Lua 5.1" then
    end
    
    table.pack = function(...)
-      local args = { n = select('#', ...) }
-      for i = 1, args.n do
-         args[i] = select(i, ...)
-      end
-      return args
+      return { n = select('#', ...), ... }
    end
 
    table.unpack = unpack
