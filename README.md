@@ -30,6 +30,7 @@ adds new ones to bring your environment closer to that of Lua 5.2.
 What's implemented
 ------------------
 
+* load and loadfile
 * table.pack and table.unpack
 * `coroutine` functions dealing with the main coroutine 
 * return code of os.execute
@@ -50,7 +51,13 @@ What's not implemented
 See also
 --------
 
-* For Lua-5.1-style APIs under Lua 5.0, see [Compat-5.1](http://keplerproject.org/compat/)
+* For more information about compatibility between Lua versions, see
+[Compatibility With Lua
+Five](http://lua-users.org/wiki/CompatibilityWithLuaFive) at the Lua-Users
+wiki
+* For Lua-5.1-style APIs under Lua 5.0, see
+[Compat-5.1](http://keplerproject.org/compat/)
 * for C support in the opposite direction (ie, loading C code using
-Lua-5.1-style APIs under Lua 5.2), see [Twoface](http://corsix.github.io/twoface/)
+Lua-5.1-style APIs under Lua 5.2), see
+[Twoface](http://corsix.github.io/twoface/)
 
