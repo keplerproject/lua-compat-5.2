@@ -161,4 +161,13 @@ if _VERSION == "Lua 5.1" then
       end
    end
 
+   local math_log = math.log
+   math.log = function(x, base)
+     if base ~= nil then
+       return math_log(x)/math_log(base)
+     else
+       return math_log(x)
+     end
+   end
+
 end
