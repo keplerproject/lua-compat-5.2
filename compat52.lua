@@ -111,6 +111,15 @@ if _VERSION == "Lua 5.1" then
    table.unpack = unpack
    unpack = nil
 
+   local string_rep = string.rep
+   string.rep = function(s, n, sep)
+      if sep ~= nil and sep ~= "" and n >= 2 then
+         return s .. string_rep(sep..s, n-1)
+      else
+         return string_rep(s, n)
+      end
+   end
+
    local main_coroutine = coroutine.create(function() end)
    
    local coroutine_running = coroutine.running
