@@ -4,6 +4,39 @@
 if _VERSION == "Lua 5.1" then
    
    bit32 = require("bit32")
+
+   -- the most powerful getmetatable we can get (preferably from debug)
+   local sudo_getmetatable = getmetatable
+
+   if type( debug ) == "table" then
+
+      debug.setuservalue = debug.setfenv
+      debug.getuservalue = debug.getfenv
+
+      if type( debug.getmetatable ) == "function" then
+         sudo_getmetatable = debug.getmetatable
+      end
+   end
+
+   local _pairs = pairs
+   pairs = function(t)
+      local mt = sudo_getmetatable(t)
+      if type(mt) == "table" and type(mt.__pairs) == "function" then
+         return mt.__pairs(t)
+      else
+         return _pairs(t)
+      end
+   end
+
+   local _ipairs = ipairs
+   ipairs = function(t)
+      local mt = sudo_getmetatable(t)
+      if type(mt) == "table" and type(mt.__ipairs) == "function" then
+         return mt.__ipairs(t)
+      else
+         return _ipairs(t)
+      end
+   end
    
    local unavailable = function() error("compat52: Do not use this function. It is incompatible with Lua 5.2") end
    
