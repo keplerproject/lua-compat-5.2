@@ -4,6 +4,39 @@
 if _VERSION == "Lua 5.1" then
    
    bit32 = require("bit32")
+
+   -- the most powerful getmetatable we can get (preferably from debug)
+   local sudo_getmetatable = getmetatable
+
+   if type( debug ) == "table" then
+
+      debug.setuservalue = debug.setfenv
+      debug.getuservalue = debug.getfenv
+
+      if type( debug.getmetatable ) == "function" then
+         sudo_getmetatable = debug.getmetatable
+      end
+   end
+
+   local _pairs = pairs
+   pairs = function(t)
+      local mt = sudo_getmetatable(t)
+      if type(mt) == "table" and type(mt.__pairs) == "function" then
+         return mt.__pairs(t)
+      else
+         return _pairs(t)
+      end
+   end
+
+   local _ipairs = ipairs
+   ipairs = function(t)
+      local mt = sudo_getmetatable(t)
+      if type(mt) == "table" and type(mt.__ipairs) == "function" then
+         return mt.__ipairs(t)
+      else
+         return _ipairs(t)
+      end
+   end
    
    local _setfenv = setfenv
 
@@ -88,6 +121,13 @@ if _VERSION == "Lua 5.1" then
       end
       return chunk
    end
+
+   local _xpcall = xpcall
+   local _unpack = unpack
+   xpcall = function(f, msgh, ...)
+      local args, n = { ... }, select('#', ...)
+      return _xpcall(function() return f(_unpack(args, 1, n)) end, msgh)
+   end
    
    local os_execute = os.execute
    os.execute = function(cmd)
@@ -147,6 +187,28 @@ if _VERSION == "Lua 5.1" then
       end
    end
 
+   local math_log = math.log
+   math.log = function(x, base)
+     if base ~= nil then
+       return math_log(x)/math_log(base)
+     else
+       return math_log(x)
+     end
+   end
+
+   local p_index = { searchers = package.loaders }
+   setmetatable(package, {
+      __index = p_index,
+      __newindex = function(p, k, v)
+         if k == "searchers" then
+            rawset(p, "loaders", v)
+            p_index.searchers = v
+         else
+            rawset(p, k, v)
+         end
+      end
+   })
+
    local function fix_pattern(pattern)
       return pattern:gsub("%z", "%%z")
    end
@@ -169,6 +231,15 @@ if _VERSION == "Lua 5.1" then
    local string_match = string.match
    function string.match(s, pattern, ...)
       return string_match(s, fix_pattern(pattern), ...)
+   end
+
+   local string_rep = string.rep
+   function string.rep(s, n, sep)
+      if sep ~= nil and sep ~= "" and n >= 2 then
+         return s .. string_rep(sep..s, n-1)
+      else
+         return string_rep(s, n)
+      end
    end
 
 end
