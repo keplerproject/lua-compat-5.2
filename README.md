@@ -57,9 +57,10 @@ What's not implemented
 
 * C APIs
 * _ENV
-* anything else I might have not bumped into yet
-* functions that were only deprecated in Lua 5.2 are not removed,
-  since they are available in Lua 5.2 when built with LUA_COMPAT_ALL.
+* obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
+  to the core language, such as the `goto`   statement, and semantic
+  changes such as ephemeron support for weak tables, remain unavailable.
+* anything else missing in the Lua libraries?
 
 See also
 --------
