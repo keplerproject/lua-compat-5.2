@@ -203,4 +203,17 @@ if _VERSION == "Lua 5.1" then
      end
    end
 
+   local p_index = { searchers = package.loaders }
+   setmetatable(package, {
+      __index = p_index,
+      __newindex = function(p, k, v)
+         if k == "searchers" then
+            rawset(p, "loaders", v)
+            p_index.searchers = v
+         else
+            rawset(p, k, v)
+         end
+      end
+   })
+
 end
