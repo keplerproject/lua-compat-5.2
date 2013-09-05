@@ -125,6 +125,13 @@ if _VERSION == "Lua 5.1" then
       end
       return chunk
    end
+
+   local _xpcall = xpcall
+   local _unpack = unpack
+   xpcall = function(f, msgh, ...)
+      local args, n = { ... }, select('#', ...)
+      return _xpcall(function() return f(_unpack(args, 1, n)) end, msgh)
+   end
    
    local os_execute = os.execute
    os.execute = function(cmd)
