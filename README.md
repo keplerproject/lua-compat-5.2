@@ -40,6 +40,7 @@ What's implemented
 
 * load and loadfile
 * table.pack and table.unpack
+* `string` patterns may contain embedded zeros
 * `coroutine` functions dealing with the main coroutine 
 * return code of os.execute
 * bit32 (actually uses bit32 available from LuaRocks as a dependency)
