@@ -23,5 +23,6 @@ build = {
    type = "builtin",
    modules = {
       ["compat52"] = "compat52.lua",
+      ["compat52.strict"] = "compat52/strict.lua",
    }
 }
