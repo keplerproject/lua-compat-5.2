@@ -5,11 +5,7 @@ if _VERSION == "Lua 5.1" then
    
    bit32 = require("bit32")
    
-   local unavailable = function() error("compat52: Do not use this function. It is incompatible with Lua 5.2") end
-   
    local _setfenv = setfenv
-   setfenv = unavailable
-   getfenv = unavailable
 
    local function check_mode(mode, prefix)
       local has = { text = false, binary = false }
@@ -109,7 +105,6 @@ if _VERSION == "Lua 5.1" then
    end
 
    table.unpack = unpack
-   unpack = nil
 
    local main_coroutine = coroutine.create(function() end)
    
