@@ -27,11 +27,20 @@ When run under Lua 5.2, this module does nothing.
 When run under Lua 5.1, it replaces some of your standard functions and
 adds new ones to bring your environment closer to that of Lua 5.2.
 
+You may also use the "strict mode" which removes from Lua 5.1 functions
+that were deprecated in 5.2; that is the equivalent of running Lua 5.2
+with the LUA_COMPAT_ALL flag disabled:
+
+```lua
+require("compat52.strict")
+```
+
 What's implemented
 ------------------
 
 * load and loadfile
 * table.pack and table.unpack
+* `string` patterns may contain embedded zeros
 * `coroutine` functions dealing with the main coroutine 
 * return code of os.execute
 * bit32 (actually uses bit32 available from LuaRocks as a dependency)

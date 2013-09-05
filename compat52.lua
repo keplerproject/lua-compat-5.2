@@ -38,11 +38,7 @@ if _VERSION == "Lua 5.1" then
       end
    end
    
-   local unavailable = function() error("compat52: Do not use this function. It is incompatible with Lua 5.2") end
-   
    local _setfenv = setfenv
-   setfenv = unavailable
-   getfenv = unavailable
 
    local function check_mode(mode, prefix)
       local has = { text = false, binary = false }
@@ -149,16 +145,6 @@ if _VERSION == "Lua 5.1" then
    end
 
    table.unpack = unpack
-   unpack = nil
-
-   local string_rep = string.rep
-   string.rep = function(s, n, sep)
-      if sep ~= nil and sep ~= "" and n >= 2 then
-         return s .. string_rep(sep..s, n-1)
-      else
-         return string_rep(s, n)
-      end
-   end
 
    local main_coroutine = coroutine.create(function() end)
    
@@ -222,5 +208,38 @@ if _VERSION == "Lua 5.1" then
          end
       end
    })
+
+   local function fix_pattern(pattern)
+      return pattern:gsub("%z", "%%z")
+   end
+   
+   local string_find = string.find
+   function string.find(s, pattern, ...)
+      return string_find(s, fix_pattern(pattern), ...)
+   end
+
+   local string_gmatch = string.gmatch
+   function string.gmatch(s, pattern)
+      return string_find(s, fix_pattern(pattern))
+   end
+
+   local string_gsub = string.gsub
+   function string.gsub(s, pattern, ...)
+      return string_gsub(s, fix_pattern(pattern), ...)
+   end
+
+   local string_match = string.match
+   function string.match(s, pattern, ...)
+      return string_match(s, fix_pattern(pattern), ...)
+   end
+
+   local string_rep = string.rep
+   function string.rep(s, n, sep)
+      if sep ~= nil and sep ~= "" and n >= 2 then
+         return s .. string_rep(sep..s, n-1)
+      else
+         return string_rep(s, n)
+      end
+   end
 
 end
