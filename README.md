@@ -38,21 +38,25 @@ require("compat52.strict")
 What's implemented
 ------------------
 
-* load and loadfile
-* table.pack and table.unpack
+* `load` and `loadfile`
+* `table.pack` and `table.unpack`
 * `string` patterns may contain embedded zeros
+* `string.rep` accepts sep argument
+* `math.log` accepts base argument
+* `xpcall` takes additional arguments
+* metamethods for `pairs` and `ipairs`
+* `package.searchers`
 * `coroutine` functions dealing with the main coroutine 
-* return code of os.execute
-* bit32 (actually uses bit32 available from LuaRocks as a dependency)
-* removes functions that are not available in Lua 5.2, such as
-  setfenv and getfenv
+* return code of `os.execute`
+* `bit32` (actually uses bit32 available from LuaRocks as a dependency)
+* optional strict mode which removes functions removed or deprecated in
+  Lua 5.2, such as `setfenv` and `getfenv`
 
 What's not implemented
 ----------------------
 
 * C APIs
 * _ENV
-* package.loaders vs. package.searchers
 * anything else I might have not bumped into yet
 * functions that were only deprecated in Lua 5.2 are not removed,
   since they are available in Lua 5.2 when built with LUA_COMPAT_ALL.
