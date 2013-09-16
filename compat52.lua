@@ -16,6 +16,14 @@ if _VERSION == "Lua 5.1" then
       if type( debug.getmetatable ) == "function" then
          sudo_getmetatable = debug.getmetatable
       end
+
+      local debug_setmetatable = debug.setmetatable
+      if type( debug_setmetatable ) == "function" then
+         debug.setmetatable = function( value, tab )
+            debug_setmetatable( value, tab )
+            return value
+         end
+      end
    end
 
    local _pairs = pairs
@@ -66,7 +74,7 @@ if _VERSION == "Lua 5.1" then
       else
          local ld_type = type(ld)
          if ld_type ~= "function" then
-            error("bad argument #1 to 'load' (function expected, got "..ld_type..")")
+            error("bad argument #1 to 'load' (function expected, got "..ld_type..")", 2)
          end
          if mode ~= "bt" then
             local checked, merr = false, nil
@@ -127,6 +135,14 @@ if _VERSION == "Lua 5.1" then
    xpcall = function(f, msgh, ...)
       local args, n = { ... }, select('#', ...)
       return _xpcall(function() return f(_unpack(args, 1, n)) end, msgh)
+   end
+
+   function rawlen( v )
+      local t = type( v )
+      if t ~= "string" and t ~= "table" then
+         error("bad argument #1 to 'rawlen' (table or string expected)", 2)
+      end
+      return #v
    end
    
    local os_execute = os.execute
@@ -239,6 +255,31 @@ if _VERSION == "Lua 5.1" then
          return s .. string_rep(sep..s, n-1)
       else
          return string_rep(s, n)
+      end
+   end
+
+   local io_write = io.write
+   function io.write( ... )
+     local res, msg, errno = io_write( ... )
+     if res then
+       return io.output()
+     else
+       return nil, msg, errno
+     end
+   end
+
+   do
+      local file_meta = sudo_getmetatable( io.stdout )
+      if type( file_meta ) == "table" and type( file_meta.__index ) == "table" then
+         local file_write = file_meta.__index.write
+         file_meta.__index.write = function( self, ... )
+            local res, msg, errno = file_write( self, ... )
+            if res then
+               return self
+            else
+               return nil, msg, errno
+            end
+         end
       end
    end
 
