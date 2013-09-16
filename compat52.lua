@@ -237,7 +237,7 @@ if _VERSION == "Lua 5.1" then
 
    local string_gmatch = string.gmatch
    function string.gmatch(s, pattern)
-      return string_find(s, fix_pattern(pattern))
+      return string_gmatch(s, fix_pattern(pattern))
    end
 
    function string.gsub(s, pattern, ...)
