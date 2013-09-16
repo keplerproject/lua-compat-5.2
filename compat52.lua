@@ -8,13 +8,21 @@ if _VERSION == "Lua 5.1" then
    -- the most powerful getmetatable we can get (preferably from debug)
    local sudo_getmetatable = getmetatable
 
-   if type( debug ) == "table" then
+   if type(debug) == "table" then
 
       debug.setuservalue = debug.setfenv
       debug.getuservalue = debug.getfenv
 
-      if type( debug.getmetatable ) == "function" then
+      if type(debug.getmetatable) == "function" then
          sudo_getmetatable = debug.getmetatable
+      end
+
+      local debug_setmetatable = debug.setmetatable
+      if type(debug_setmetatable) == "function" then
+         debug.setmetatable = function(value, tab)
+            debug_setmetatable(value, tab)
+            return value
+         end
       end
    end
 
@@ -66,7 +74,7 @@ if _VERSION == "Lua 5.1" then
       else
          local ld_type = type(ld)
          if ld_type ~= "function" then
-            error("bad argument #1 to 'load' (function expected, got "..ld_type..")")
+            error("bad argument #1 to 'load' (function expected, got "..ld_type..")", 2)
          end
          if mode ~= "bt" then
             local checked, merr = false, nil
@@ -127,6 +135,14 @@ if _VERSION == "Lua 5.1" then
    xpcall = function(f, msgh, ...)
       local args, n = { ... }, select('#', ...)
       return _xpcall(function() return f(_unpack(args, 1, n)) end, msgh)
+   end
+
+   function rawlen(v)
+      local t = type(v)
+      if t ~= "string" and t ~= "table" then
+         error("bad argument #1 to 'rawlen' (table or string expected)", 2)
+      end
+      return #v
    end
    
    local os_execute = os.execute
@@ -189,11 +205,28 @@ if _VERSION == "Lua 5.1" then
 
    local math_log = math.log
    math.log = function(x, base)
-     if base ~= nil then
-       return math_log(x)/math_log(base)
-     else
-       return math_log(x)
-     end
+      if base ~= nil then
+         return math_log(x)/math_log(base)
+      else
+         return math_log(x)
+      end
+   end
+
+   package.searchpath = function(name, path, sep, rep)
+      sep = (sep or "."):gsub("(%p)", "%%%1")
+      rep = (rep or package.config:sub(1, 1)):gsub("(%%)", "%%%1")
+      local pname = name:gsub(sep, rep):gsub("(%%)", "%%%1")
+      local msg = {}
+      for subpath in path:gmatch("[^;]+") do
+         local fpath = subpath:gsub("%?", pname)
+         local f = io.open(fpath, "r")
+         if f then
+            f:close()
+            return fpath
+         end
+         msg[#msg+1] = "\n\tno file '" .. fpath .. "'"
+      end
+      return nil, table.concat(msg)
    end
 
    local p_index = { searchers = package.loaders }
@@ -209,8 +242,9 @@ if _VERSION == "Lua 5.1" then
       end
    })
 
+   local string_gsub = string.gsub
    local function fix_pattern(pattern)
-      return pattern:gsub("%z", "%%z")
+      return (string_gsub(pattern, "%z", "%%z"))
    end
    
    local string_find = string.find
@@ -220,10 +254,9 @@ if _VERSION == "Lua 5.1" then
 
    local string_gmatch = string.gmatch
    function string.gmatch(s, pattern)
-      return string_find(s, fix_pattern(pattern))
+      return string_gmatch(s, fix_pattern(pattern))
    end
 
-   local string_gsub = string.gsub
    function string.gsub(s, pattern, ...)
       return string_gsub(s, fix_pattern(pattern), ...)
    end
@@ -239,6 +272,31 @@ if _VERSION == "Lua 5.1" then
          return s .. string_rep(sep..s, n-1)
       else
          return string_rep(s, n)
+      end
+   end
+
+   local io_write = io.write
+   function io.write(...)
+      local res, msg, errno = io_write(...)
+      if res then
+         return io.output()
+      else
+         return nil, msg, errno
+      end
+   end
+
+   do
+      local file_meta = sudo_getmetatable(io.stdout)
+      if type(file_meta) == "table" and type(file_meta.__index) == "table" then
+         local file_write = file_meta.__index.write
+         file_meta.__index.write = function(self, ...)
+            local res, msg, errno = file_write(self, ...)
+            if res then
+               return self
+            else
+               return nil, msg, errno
+            end
+         end
       end
    end
 
