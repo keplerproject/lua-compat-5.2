@@ -227,7 +227,7 @@ if _VERSION == "Lua 5.1" then
 
    local string_gsub = string.gsub
    local function fix_pattern(pattern)
-      return string_gsub(pattern, "%z", "%%z")
+      return (string_gsub(pattern, "%z", "%%z"))
    end
    
    local string_find = string.find
