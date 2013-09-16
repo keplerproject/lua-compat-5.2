@@ -205,11 +205,11 @@ if _VERSION == "Lua 5.1" then
 
    local math_log = math.log
    math.log = function(x, base)
-     if base ~= nil then
-       return math_log(x)/math_log(base)
-     else
-       return math_log(x)
-     end
+      if base ~= nil then
+         return math_log(x)/math_log(base)
+      else
+         return math_log(x)
+      end
    end
 
    local p_index = { searchers = package.loaders }
@@ -225,8 +225,9 @@ if _VERSION == "Lua 5.1" then
       end
    })
 
+   local string_gsub = string.gsub
    local function fix_pattern(pattern)
-      return pattern:gsub("%z", "%%z")
+      return string_gsub(pattern, "%z", "%%z")
    end
    
    local string_find = string.find
@@ -239,7 +240,6 @@ if _VERSION == "Lua 5.1" then
       return string_find(s, fix_pattern(pattern))
    end
 
-   local string_gsub = string.gsub
    function string.gsub(s, pattern, ...)
       return string_gsub(s, fix_pattern(pattern), ...)
    end
@@ -260,12 +260,12 @@ if _VERSION == "Lua 5.1" then
 
    local io_write = io.write
    function io.write(...)
-     local res, msg, errno = io_write(...)
-     if res then
-       return io.output()
-     else
-       return nil, msg, errno
-     end
+      local res, msg, errno = io_write(...)
+      if res then
+         return io.output()
+      else
+         return nil, msg, errno
+      end
    end
 
    do
