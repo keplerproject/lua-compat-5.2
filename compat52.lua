@@ -8,19 +8,19 @@ if _VERSION == "Lua 5.1" then
    -- the most powerful getmetatable we can get (preferably from debug)
    local sudo_getmetatable = getmetatable
 
-   if type( debug ) == "table" then
+   if type(debug) == "table" then
 
       debug.setuservalue = debug.setfenv
       debug.getuservalue = debug.getfenv
 
-      if type( debug.getmetatable ) == "function" then
+      if type(debug.getmetatable) == "function" then
          sudo_getmetatable = debug.getmetatable
       end
 
       local debug_setmetatable = debug.setmetatable
-      if type( debug_setmetatable ) == "function" then
-         debug.setmetatable = function( value, tab )
-            debug_setmetatable( value, tab )
+      if type(debug_setmetatable) == "function" then
+         debug.setmetatable = function(value, tab)
+            debug_setmetatable(value, tab)
             return value
          end
       end
@@ -137,8 +137,8 @@ if _VERSION == "Lua 5.1" then
       return _xpcall(function() return f(_unpack(args, 1, n)) end, msgh)
    end
 
-   function rawlen( v )
-      local t = type( v )
+   function rawlen(v)
+      local t = type(v)
       if t ~= "string" and t ~= "table" then
          error("bad argument #1 to 'rawlen' (table or string expected)", 2)
       end
@@ -259,8 +259,8 @@ if _VERSION == "Lua 5.1" then
    end
 
    local io_write = io.write
-   function io.write( ... )
-     local res, msg, errno = io_write( ... )
+   function io.write(...)
+     local res, msg, errno = io_write(...)
      if res then
        return io.output()
      else
@@ -269,11 +269,11 @@ if _VERSION == "Lua 5.1" then
    end
 
    do
-      local file_meta = sudo_getmetatable( io.stdout )
-      if type( file_meta ) == "table" and type( file_meta.__index ) == "table" then
+      local file_meta = sudo_getmetatable(io.stdout)
+      if type(file_meta) == "table" and type(file_meta.__index) == "table" then
          local file_write = file_meta.__index.write
-         file_meta.__index.write = function( self, ... )
-            local res, msg, errno = file_write( self, ... )
+         file_meta.__index.write = function(self, ...)
+            local res, msg, errno = file_write(self, ...)
             if res then
                return self
             else
