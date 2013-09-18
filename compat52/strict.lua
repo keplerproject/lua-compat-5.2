@@ -13,5 +13,11 @@ if _VERSION == "Lua 5.1" then
    loadstring = nil
    table.maxn = nil
    unpack = nil
+   -- functions deprecated in Lua 5.1 are also not available:
+   table.getn = nil
+   table.setn = nil
+   loadlib = nil
+   math.mod = nil
+   string.gfind = nil
 
 end
