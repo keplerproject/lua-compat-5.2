@@ -275,6 +275,19 @@ if _VERSION == "Lua 5.1" then
       end
    end
 
+   local string_format = string.format
+   function string.format(fmt, ...)
+      local args, n = { ... }, select('#', ...)
+      local i = 0
+      for lead,kind in fmt:gmatch("(%%*)%%[%d%.%-%+%# ]*(%a)") do
+         if #lead % 2 == 0 then i = i + 1 end
+         if kind == "s" and type(args[i]) ~= "string" then
+            args[i] = tostring(args[i])
+         end
+      end
+      return string_format(fmt, _unpack(args, 1, n))
+   end
+
    local io_write = io.write
    function io.write(...)
       local res, msg, errno = io_write(...)
