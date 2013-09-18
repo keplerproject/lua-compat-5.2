@@ -52,6 +52,7 @@ What's implemented
 * `coroutine` functions dealing with the main coroutine 
 * return code of `os.execute`
 * `io.write` and `file:write` return file handle
+* `io.lines` and `file:lines` accept format arguments (like `io.read`)
 * `bit32` (actually uses bit32 available from LuaRocks as a dependency)
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
