@@ -275,6 +275,19 @@ if _VERSION == "Lua 5.1" then
       end
    end
 
+   local string_format = string.format
+   function string.format(fmt, ...)
+      local args, n = { ... }, select('#', ...)
+      local i = 0
+      for lead,kind in fmt:gmatch("(%%*)%%[%d%.%-%+%# ]*(%a)") do
+         if #lead % 2 == 0 then i = i + 1 end
+         if kind == "s" and type(args[i]) ~= "string" then
+            args[i] = tostring(args[i])
+         end
+      end
+      return string_format(fmt, _unpack(args, 1, n))
+   end
+
    local io_write = io.write
    function io.write(...)
       local res, msg, errno = io_write(...)
@@ -283,6 +296,35 @@ if _VERSION == "Lua 5.1" then
       else
          return nil, msg, errno
       end
+   end
+
+   local lines_iterator
+   do
+      local function helper( st, var_1, ... )
+         if var_1 == nil then
+            if st.doclose then st.f:close() end
+            if (...) ~= nil then
+               error((...), 2)
+            end
+         end
+         return var_1, ...
+      end
+
+      function lines_iterator(st)
+         return helper(st, st.f:read(_unpack(st, 1, st.n)))
+      end
+   end
+
+   function io.lines(fname, ...)
+      local doclose, file, msg
+      if fname ~= nil then
+         doclose, file, msg = true, io.open(fname, "r")
+         if not file then error(msg) end
+      else
+         doclose, file = false, io.input()
+      end
+      local st = { f=file, doclose=doclose, n=select('#', ...), ... }
+      return lines_iterator, st
    end
 
    do
@@ -296,6 +338,14 @@ if _VERSION == "Lua 5.1" then
             else
                return nil, msg, errno
             end
+         end
+
+         file_meta.__index.lines = function(self, ...)
+            if io.type(self) == "closed file" then
+               error("attempt to use a closed file", 2)
+            end
+            local st = { f=self, doclose=false, n=select('#', ...), ... }
+            return lines_iterator, st
          end
       end
    end

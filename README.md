@@ -42,12 +42,17 @@ What's implemented
 * `table.pack` and `table.unpack`
 * `string` patterns may contain embedded zeros
 * `string.rep` accepts sep argument
+* `string.format` calls `tostring` on arguments for `%s`
 * `math.log` accepts base argument
 * `xpcall` takes additional arguments
 * metamethods for `pairs` and `ipairs`
+* `rawlen` (but `#` still doesn't respect `__len` for tables)
 * `package.searchers`
+* `package.searchpath`
 * `coroutine` functions dealing with the main coroutine 
 * return code of `os.execute`
+* `io.write` and `file:write` return file handle
+* `io.lines` and `file:lines` accept format arguments (like `io.read`)
 * `bit32` (actually uses bit32 available from LuaRocks as a dependency)
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
