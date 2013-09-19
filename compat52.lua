@@ -152,7 +152,7 @@ if _VERSION == "Lua 5.1" then
       if code == 0 then
          return true, "exit", code
       else
-         return nil, "exit", code
+         return nil, "exit", bit32.rshift(code, 8)
       end
    end
    
