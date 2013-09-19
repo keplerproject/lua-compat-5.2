@@ -317,6 +317,8 @@ if _VERSION == "Lua 5.1" then
       end
    end
 
+   local valid_format = { ["*l"] = true, ["*n"] = true, ["*a"] = true }
+
    function io.lines(fname, ...)
       local doclose, file, msg
       if fname ~= nil then
@@ -326,6 +328,11 @@ if _VERSION == "Lua 5.1" then
          doclose, file = false, io.input()
       end
       local st = { f=file, doclose=doclose, n=select('#', ...), ... }
+      for i = 1, st.n do
+         if type(st[i]) ~= "number" and not valid_format[st[i]] then
+           error("bad argument #"..(i+1).." to 'for iterator' (invalid format)", 2)
+         end
+      end
       return lines_iterator, st
    end
 
@@ -347,6 +354,11 @@ if _VERSION == "Lua 5.1" then
                error("attempt to use a closed file", 2)
             end
             local st = { f=self, doclose=false, n=select('#', ...), ... }
+            for i = 1, st.n do
+               if type(st[i]) ~= "number" and not valid_format[st[i]] then
+                  error("bad argument #"..(i+1).." to 'for iterator' (invalid format)", 2)
+               end
+            end
             return lines_iterator, st
          end
       end
