@@ -53,7 +53,8 @@ What's implemented
 * return code of `os.execute`
 * `io.write` and `file:write` return file handle
 * `io.lines` and `file:lines` accept format arguments (like `io.read`)
-* `bit32` (actually uses bit32 available from LuaRocks as a dependency)
+* `bit32` (actual backport from the `bit32` library from Lua 5.2,
+  also available as a stand-alone rock in the LuaRocks repository)
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
 
@@ -63,7 +64,7 @@ What's not implemented
 * C APIs
 * _ENV
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
-  to the core language, such as the `goto`   statement, and semantic
+  to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.
 * anything else missing in the Lua libraries?
 
