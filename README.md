@@ -1,18 +1,28 @@
-lua-compat-5.2
-==============
+# lua-compat-5.2
 
-Compatibility module providing Lua-5.2-style APIs for Lua 5.1.
+Lua-5.2-style APIs for Lua 5.1.
 
-What is it
-----------
+## What is it
 
-This is a small module that aims to make it easier to write Lua code
-in a Lua-5.2-style that runs on both Lua 5.1 and Lua 5.2. This does *not*
-make Lua 5.1 entirely compatible with Lua 5.2, but it brings the API
-closer to that of Lua 5.2.
+This is a small module that aims to make it easier to write code
+in a Lua-5.2-style that is compatible with both Lua 5.1 and Lua 5.2.
+This does *not* make Lua 5.1 entirely compatible with Lua 5.2, but
+it brings the API closer to that of Lua 5.2.
 
-How to use it
--------------
+It includes:
+
+* _For writing Lua_: Lua modules, `compat52` and `compat52.strict`,
+  which can be require'd from Lua scripts and run in both Lua 5.1
+  and 5.2, plus a backport of `bit32` straight from the Lua 5.2
+  sources, adapted to build as a Lua 5.1 module.
+* _For writing C_: A C header and file which can be linked to your
+  Lua module written in C, providing some functions from the C API
+  of Lua 5.2 that do not exist in Lua 5.1, making it easier to write
+  C code that compiles with both versions of liblua.
+
+## How to use it
+
+### Lua module
 
 ```lua
 require("compat52")
@@ -35,8 +45,14 @@ with the LUA_COMPAT_ALL flag disabled:
 require("compat52.strict")
 ```
 
-What's implemented
-------------------
+### C code
+
+Add the files `compat-5.2.c` and `compat-5.2.h` to your project and link it
+with the rest of your code as usual.
+
+## What's implemented
+
+### Lua
 
 * `load` and `loadfile`
 * `table.pack` and `table.unpack`
@@ -58,18 +74,22 @@ What's implemented
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
 
-What's not implemented
-----------------------
+### C
 
-* C APIs
+* `luaL_reg`
+* `luaL_addchar`
+* `luaL_setfuncs`
+
+## What's not implemented
+
+* most C APIs
 * _ENV
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
   to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.
 * anything else missing in the Lua libraries?
 
-See also
---------
+## See also
 
 * For more information about compatibility between Lua versions, see
 [Compatibility With Lua
@@ -80,4 +100,13 @@ wiki
 * for C support in the opposite direction (ie, loading C code using
 Lua-5.1-style APIs under Lua 5.2), see
 [Twoface](http://corsix.github.io/twoface/)
+
+## Credits
+
+This package contains code written by:
+
+* [The Lua Team](http://www.lua.org)
+* Philipp Janda ([@siffiejoe](http://github.com/siffiejoe))
+* Tomás Guisasola Gorham ([@tomasguisasola](http://github.com/tomasguisasola))
+* Hisham Muhammad ([@hishamhm](http://github.com/hishamhm))
 
