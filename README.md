@@ -106,7 +106,7 @@ Lua-5.1-style APIs under Lua 5.2), see
 This package contains code written by:
 
 * [The Lua Team](http://www.lua.org)
-* Philipp Janda (@siffiejoe)
-* Tomás Guisasola Gorham (@tomasguisasola)
-* Hisham Muhammad (@hishamhm)
+* Philipp Janda ([@siffiejoe](http://github.com/siffiejoe))
+* Tomás Guisasola Gorham ([@tomasguisasola](http://github.com/tomasguisasola))
+* Hisham Muhammad ([@hishamhm](http://github.com/hishamhm))
 
