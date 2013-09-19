@@ -48,6 +48,7 @@ end
 
 
 package.path = "../?.lua;" .. package.path
+package.cpath = "../?.so;" .. package.path
 -- load compatibility functions (in Lua 5.1)
 require("compat52")
 
