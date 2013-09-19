@@ -323,7 +323,7 @@ if _VERSION == "Lua 5.1" then
       local doclose, file, msg
       if fname ~= nil then
          doclose, file, msg = true, io.open(fname, "r")
-         if not file then error(msg) end
+         if not file then error(msg, 2) end
       else
          doclose, file = false, io.input()
       end
