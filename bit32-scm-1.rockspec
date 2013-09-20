@@ -24,6 +24,9 @@ dependencies = {
 build = {
    type = "builtin",
    modules = {
-      bit32 = "bit32.c",
+      bit32 = {
+         sources = { "lbitlib.c", "c-api/compat-5.2.c" },
+         incdirs = { "c-api" },
+      }
    }
 }

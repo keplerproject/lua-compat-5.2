@@ -12,6 +12,12 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+/********************************************************************/
+#include "compat-5.2.h"
+#undef LUAMOD_API
+#define LUAMOD_API extern
+/********************************************************************/
+
 
 /* number of bits to consider in a number */
 #if !defined(LUA_NBITS)
