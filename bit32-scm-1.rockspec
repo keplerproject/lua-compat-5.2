@@ -3,7 +3,8 @@ package = "bit32"
 version = "scm-1"
 
 source = {
-   url = "https://raw.github.com/hishamhm/lua-compat-5.2/master/lbitlib.c",
+   url = "git://github.com/hishamhm/lua-compat-5.2.git",
+   branch = "master",
 }
 
 description = {
@@ -13,16 +14,19 @@ description = {
       backported to Lua 5.1
    ]],
    license = "MIT/X11",
-   homepage = "http://lua.org/work/",
+   homepage = "http://www.lua.org/manual/5.2/manual.html#6.7",
 }
 
 dependencies = {
-   "lua >= 5.1, < 5.2"
+   "lua >= 5.1, <= 5.2"
 }
 
 build = {
    type = "builtin",
    modules = {
-      bit32 = "lbitlib.c",
+      bit32 = {
+         sources = { "lbitlib.c", "c-api/compat-5.2.c" },
+         incdirs = { "c-api" },
+      }
    }
 }
