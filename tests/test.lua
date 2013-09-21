@@ -177,6 +177,19 @@ do
    print("rawlen()", rawlen(t), rawlen("123"))
 end
 ____________________________________________________________''
+print("collectgarbage()", collectgarbage("isrunning"))
+print("collectgarbage()", collectgarbage("stop"))
+print("collectgarbage()", collectgarbage("isrunning"))
+print("collectgarbage()", collectgarbage("collect"))
+print("collectgarbage()", collectgarbage("isrunning"))
+print("collectgarbage()", collectgarbage("step", 10))
+print("collectgarbage()", collectgarbage("isrunning"))
+print("collectgarbage()", collectgarbage("restart"))
+print("collectgarbage()", collectgarbage("isrunning"))
+print("collectgarbage()", collectgarbage("count"))
+print("collectgarbage()", collectgarbage("generational"))
+print("collectgarbage()", collectgarbage("incremental"))
+____________________________________________________________''
 print("os.execute()", os.execute("exit 1"))
 print("os.execute()", os.execute("echo 'hello world'"))
 print("os.execute()", os.execute("no_such_file"))

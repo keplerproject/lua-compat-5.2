@@ -138,17 +138,17 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 /********************************************************************/
 
 
-void lua_pushunsigned( lua_State* L, lua_Unsigned n ) {
-  lua_pushnumber( L, lua_unsigned2number( n ) );
+void lua_pushunsigned (lua_State *L, lua_Unsigned n) {
+  lua_pushnumber(L, lua_unsigned2number(n));
 }
 
 
-lua_Unsigned luaL_checkunsigned( lua_State* L, int i ) {
+lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
   lua_Unsigned result;
-  lua_Number n = lua_tonumber( L, i );
-  if( n == 0 )
-    luaL_checktype( L, i, LUA_TNUMBER );
-  lua_number2unsigned( result, n );
+  lua_Number n = lua_tonumber(L, i);
+  if (n == 0)
+    luaL_checktype(L, i, LUA_TNUMBER);
+  lua_number2unsigned(result, n);
   return result;
 }
 

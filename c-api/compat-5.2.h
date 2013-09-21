@@ -18,5 +18,5 @@ typedef LUAI_UINT32 lua_Unsigned;
 
 #endif
 void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);
-void lua_pushunsigned( lua_State* L, lua_Unsigned n );
-lua_Unsigned luaL_checkunsigned( lua_State* L, int i );
+void lua_pushunsigned (lua_State *L, lua_Unsigned n);
+lua_Unsigned luaL_checkunsigned (lua_State *L, int i);

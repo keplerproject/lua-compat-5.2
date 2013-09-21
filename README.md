@@ -63,6 +63,7 @@ with the rest of your code as usual.
 * `xpcall` takes additional arguments
 * metamethods for `pairs` and `ipairs`
 * `rawlen` (but `#` still doesn't respect `__len` for tables)
+* `collectgarbage`
 * `package.searchers`
 * `package.searchpath`
 * `coroutine` functions dealing with the main coroutine 
@@ -71,14 +72,19 @@ with the rest of your code as usual.
 * `io.lines` and `file:lines` accept format arguments (like `io.read`)
 * `bit32` (actual backport from the `bit32` library from Lua 5.2,
   also available as a stand-alone rock in the LuaRocks repository)
+* `debug.setmetatable` returns object
+* `debug.getuservalue` and `debug.setuservalue`
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
 
 ### C
 
-* `luaL_reg`
+* `luaL_Reg`
 * `luaL_addchar`
+* `lua_pushunsigned`
+* `luaL_checkunsigned`
 * `luaL_setfuncs`
+* `luaL_newlib`
 
 ## What's not implemented
 
@@ -87,6 +93,11 @@ with the rest of your code as usual.
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
   to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.
+* `"*L"` format flag for `io.read`, `io.lines`, `file:read`, `file:lines`
+* second argument for `os.exit`
+* return values of `pipe:close` if `pipe` has been opened by `io.popen`
+* `"*"` as second argument for `package.loadlib`
+* some functions in the debug library
 * anything else missing in the Lua libraries?
 
 ## See also

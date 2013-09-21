@@ -144,6 +144,34 @@ if _VERSION == "Lua 5.1" then
       end
       return #v
    end
+
+   local gc_isrunning = true
+   local _collectgarbage = collectgarbage
+   collectgarbage = function(opt, ...)
+      opt = opt or "collect"
+      local v = 0
+      if opt == "collect" then
+         v = _collectgarbage(opt, ...)
+         if not gc_isrunning then _collectgarbage("stop") end
+      elseif opt == "stop" then
+         gc_isrunning = false
+         return _collectgarbage(opt, ...)
+      elseif opt == "restart" then
+         gc_isrunning = true
+         return _collectgarbage(opt, ...)
+      elseif opt == "count" then
+         v = _collectgarbage(opt, ...)
+         return v, (v-math.floor(v))*1024
+      elseif opt == "step" then
+         v = _collectgarbage(opt, ...)
+         if not gc_isrunning then _collectgarbage("stop") end
+      elseif opt == "isrunning" then
+         return gc_isrunning
+      elseif opt ~= "generational" and opt ~= "incremental" then
+         return _collectgarbage(opt, ...)
+      end
+      return v
+   end
    
    local os_execute = os.execute
    os.execute = function(cmd)
