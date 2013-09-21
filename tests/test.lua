@@ -48,7 +48,7 @@ end
 
 
 package.path = "../?.lua;" .. package.path
-package.cpath = "../?.so;" .. package.path
+package.cpath = "../?.so;" .. package.cpath
 -- load compatibility functions (in Lua 5.1)
 require("compat52")
 
@@ -364,6 +364,27 @@ do
       f:close()
    end))
    os.remove("data.txt")
+end
+____________________________________________________________''
+do
+   local modname = _VERSION:gsub("^.*(%d+)%.(%d+).-$", "%1%2-testmod")
+   local ok, mod = pcall(require, modname)
+   if not ok then
+      io.write("###  no ", modname, ".so or ", modname, ".dll!  ###\n")
+      io.write("'require' claimed: ", mod, "\n")
+      io.write("###         Skipping C API tests!         ###\n")
+   else
+      print("C API", mod.dummy())
+      print("C API", mod.unsigned(1))
+      print("C API", mod.unsigned(2^31+1))
+      print("C API", mod.unsigned(2^32+1))
+      print("C API", mod.unsigned(-1))
+      print("C API", mod.unsigned(2^56))
+      print("C API", mod.unsigned("17"))
+      print("C API", pcall(mod.unsigned, true))
+      print("C API", mod.getupvalues1())
+      print("C API", mod.getupvalues2())
+   end
 end
 ____________________________________________________________''
 io.write("###  Output written to ", outfile, "!  ###\n")
