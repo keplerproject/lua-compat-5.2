@@ -5,6 +5,16 @@
 
 #define NUP 3
 
+static int test_tonumber (lua_State *L) {
+  int isnum = 0;
+  lua_Number n = lua_tonumberx(L, 1, &isnum);
+  if( !isnum )
+    lua_pushnil(L);
+  else
+    lua_pushnumber(L, n);
+  return 1;
+}
+
 static int test_unsigned (lua_State *L) {
   lua_Unsigned u = luaL_checkunsigned(L, 1);
   lua_Unsigned u2 = lua_tounsigned(L, 1);
@@ -41,6 +51,7 @@ static int test_upvalues (lua_State *L) {
 
 static const luaL_Reg funcs[] = {
   { "dummy", test_dummy },
+  { "tonumber", test_tonumber },
   { "unsigned", test_unsigned },
   { "uservalue", test_uservalue },
   { NULL, NULL }

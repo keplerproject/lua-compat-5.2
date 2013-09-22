@@ -4,6 +4,14 @@
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
+lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
+  lua_Number n = lua_tonumber(L, i);
+  if (isnum != NULL) {
+    *isnum = (n != 0 || lua_isnumber(L, i));
+  }
+  return n;
+}
+
 void lua_getuservalue (lua_State *L, int i) {
   luaL_checkstack(L, 2, "not enough stack slots");
   lua_getfenv(L, i);
@@ -176,7 +184,7 @@ void lua_pushunsigned (lua_State *L, lua_Unsigned n) {
 lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
   lua_Unsigned result;
   lua_Number n = lua_tonumber(L, i);
-  if (n == 0)
+  if (n == 0 && !lua_isnumber(L, i))
     luaL_checktype(L, i, LUA_TNUMBER);
   lua_number2unsigned(result, n);
   return result;
@@ -185,13 +193,7 @@ lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
 
 lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
   lua_Unsigned result;
-  lua_Number n = lua_tonumber(L, i);
-  if (isnum != NULL) {
-    if (n == 0 && lua_type(L, i) != LUA_TNUMBER ) {
-      *isnum = 0;
-    } else
-      *isnum = 1;
-  }
+  lua_Number n = lua_tonumberx(L, i, isnum);
   lua_number2unsigned(result, n);
   return result;
 }

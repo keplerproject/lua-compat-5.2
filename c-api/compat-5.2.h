@@ -21,6 +21,7 @@ typedef LUAI_UINT32 lua_Unsigned;
 void lua_pushunsigned (lua_State *L, lua_Unsigned n);
 lua_Unsigned luaL_checkunsigned (lua_State *L, int i);
 lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum);
+
 #endif /* Lua 5.1 */
 
 
@@ -32,6 +33,7 @@ lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum);
 
 #endif /* Lua 5.0 *or* 5.1 */
 
+lua_Number lua_tonumberx (lua_State *L, int i, int *isnum);
 void lua_getuservalue (lua_State *L, int i);
 void lua_setuservalue (lua_State *L, int i);
 void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);

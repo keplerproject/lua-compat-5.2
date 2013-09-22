@@ -84,6 +84,7 @@ with the rest of your code as usual.
 * `luaL_addchar`
 * `lua_pushunsigned`
 * `luaL_checkunsigned`
+* `lua_tonumberx`
 * `lua_tounsignedx`
 * `lua_tounsigned`
 * `lua_getuservalue`

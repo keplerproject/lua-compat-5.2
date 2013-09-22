@@ -375,6 +375,11 @@ do
       io.write("###         Skipping C API tests!         ###\n")
    else
       print("C API", mod.dummy())
+      print("C API", mod.tonumber(12))
+      print("C API", mod.tonumber("12"))
+      print("C API", mod.tonumber("0"))
+      print("C API", mod.tonumber(false))
+      print("C API", mod.tonumber("error"))
       print("C API", mod.unsigned(1))
       print("C API", mod.unsigned(2^31+1))
       print("C API", mod.unsigned(2^32+1))
