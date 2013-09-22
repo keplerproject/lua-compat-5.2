@@ -79,18 +79,24 @@ with the rest of your code as usual.
 
 ### C
 
-* `luaL_Reg`
+* `luaL_Reg` (for Lua 5.0)
 * `luaL_Unsigned`
-* `luaL_addchar`
+* `luaL_addchar` (for Lua 5.0)
 * `lua_pushunsigned`
 * `luaL_checkunsigned`
+* `luaL_optunsigned`
 * `lua_tonumberx`
 * `lua_tounsignedx`
 * `lua_tounsigned`
-* `lua_getuservalue`
-* `lua_setuservalue`
+* `lua_len`
+* `lua_rawlen`
+* `lua_getuservalue` (in Lua 5.1 all userdata have an env by default)
+* `lua_setuservalue` (sets `_G` as env instead of `nil`)
+* `lua_pushglobaltable`
+* `luaL_testudata`
 * `luaL_setfuncs`
 * `luaL_newlib`
+* `luaL_setmetatable`
 
 ## What's not implemented
 

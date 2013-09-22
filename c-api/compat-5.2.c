@@ -4,6 +4,39 @@
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
+void *luaL_testudata (lua_State *L, int i, const char *tname) {
+  void *p = lua_touserdata(L, i);
+  if (p == NULL || !lua_getmetatable(L, i))
+    return NULL;
+  else {
+    int res = 0;
+    luaL_getmetatable(L, tname);
+    res = lua_rawequal(L, -1, -2);
+    lua_pop(L, 2);
+    if (!res)
+      p = NULL;
+  }
+  return p;
+}
+
+
+void lua_len (lua_State *L, int i) {
+  switch (lua_type(L, i)) {
+    case LUA_TSTRING: /* fall through */
+    case LUA_TTABLE:
+      lua_pushnumber(L, (int)lua_objlen(L, i));
+      break;
+    case LUA_TUSERDATA:
+      if (luaL_callmeta(L, i, "__len"))
+        break;
+      /* maybe fall through */
+    default:
+      luaL_error(L, "attempt to get length of a %s value",
+                 lua_typename(L, i));
+  }
+}
+
+
 lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
   lua_Number n = lua_tonumber(L, i);
   if (isnum != NULL) {
@@ -11,6 +44,7 @@ lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
   }
   return n;
 }
+
 
 void lua_getuservalue (lua_State *L, int i) {
   luaL_checkstack(L, 2, "not enough stack slots");
@@ -56,7 +90,16 @@ void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
   }
   lua_pop(L, nup);  /* remove upvalues */
 }
-#endif
+
+
+void luaL_setmetatable (lua_State *L, const char *tname) {
+  luaL_checkstack(L, 1, "not enough stack slots");
+  luaL_getmetatable(L, tname);
+  lua_setmetatable(L, -2);
+}
+
+
+#endif /* Lua 5.0 or Lua 5.1 */
 
 
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
@@ -196,6 +239,11 @@ lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
   lua_Number n = lua_tonumberx(L, i, isnum);
   lua_number2unsigned(result, n);
   return result;
+}
+
+
+lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def) {
+  return luaL_opt(L, luaL_checkunsigned, i, def);
 }
 
 
