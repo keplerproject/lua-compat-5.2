@@ -2,7 +2,37 @@
 #include "lauxlib.h"
 #include "compat-5.2.h"
 
-#if !defined LUA_VERSION_NUM || LUA_VERSION_NUM==501
+#if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
+
+void lua_getuservalue (lua_State *L, int i) {
+  luaL_checkstack(L, 2, "not enough stack slots");
+  lua_getfenv(L, i);
+  if (!lua_isnil(L, -1)) {
+    lua_pushvalue(L, LUA_GLOBALSINDEX);
+    if (lua_rawequal(L, -1, -2)) {
+      lua_pop(L, 1);
+      lua_pushnil(L);
+      lua_replace(L, -2);
+    }
+  } else {
+    lua_pop(L, 1);
+    luaL_checktype(L, i, LUA_TUSERDATA);
+  }
+}
+
+void lua_setuservalue (lua_State *L, int i) {
+  if (lua_isnil(L, -1)) {
+    luaL_checkstack(L, 1, "not enough stack slots");
+    lua_pushvalue(L, LUA_GLOBALSINDEX);
+    lua_replace(L, -2);
+  }
+  if (!lua_setfenv(L, i)) {
+    lua_pushnil(L); /* setfenv popped one, so i might be invalid */
+    luaL_checktype(L, i, LUA_TUSERDATA);
+  }
+}
+
+
 /*
 ** Adapted from Lua 5.2.0
 */
@@ -21,7 +51,7 @@ void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
 #endif
 
 
-#if LUA_VERSION_NUM == 501
+#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
 #include <limits.h>
 
 typedef LUAI_INT32 LUA_INT32;
