@@ -153,6 +153,20 @@ lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
 }
 
 
+lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
+  lua_Unsigned result;
+  lua_Number n = lua_tonumber(L, i);
+  if (isnum != NULL) {
+    if (n == 0 && lua_type(L, i) != LUA_TNUMBER ) {
+      *isnum = 0;
+    } else
+      *isnum = 1;
+  }
+  lua_number2unsigned(result, n);
+  return result;
+}
+
+
 #endif /* LUA_VERSION_NUM == 501 */
 
 

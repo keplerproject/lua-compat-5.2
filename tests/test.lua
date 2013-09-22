@@ -381,7 +381,9 @@ do
       print("C API", mod.unsigned(-1))
       print("C API", mod.unsigned(2^56))
       print("C API", mod.unsigned("17"))
+      print("C API", pcall(mod.unsigned, "0"))
       print("C API", pcall(mod.unsigned, true))
+      print("C API", mod.uservalue())
       print("C API", mod.getupvalues1())
       print("C API", mod.getupvalues2())
    end

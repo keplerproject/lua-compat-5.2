@@ -80,9 +80,14 @@ with the rest of your code as usual.
 ### C
 
 * `luaL_Reg`
+* `luaL_Unsigned`
 * `luaL_addchar`
 * `lua_pushunsigned`
 * `luaL_checkunsigned`
+* `lua_tounsignedx`
+* `lua_tounsigned`
+* `lua_getuservalue`
+* `lua_setuservalue`
 * `luaL_setfuncs`
 * `luaL_newlib`
 

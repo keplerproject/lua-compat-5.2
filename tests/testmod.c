@@ -3,11 +3,28 @@
 #include "lauxlib.h"
 #include "compat-5.2.h"
 
+#define NUP 3
 
 static int test_unsigned (lua_State *L) {
   lua_Unsigned u = luaL_checkunsigned(L, 1);
+  lua_Unsigned u2 = lua_tounsigned(L, 1);
   lua_pushunsigned(L, u);
-  return 1;
+  lua_pushboolean(L, u == u2);
+  return 2;
+}
+
+static int test_uservalue (lua_State *L) {
+  void* udata = lua_newuserdata(L, 1);
+  int ui = lua_gettop(L);
+  lua_getuservalue(L, ui);
+  lua_newtable(L);
+  lua_setuservalue(L, ui);
+  lua_getuservalue(L, ui);
+  lua_pushnil(L);
+  lua_setuservalue(L, ui);
+  lua_getuservalue(L, ui);
+  (void)udata;
+  return 3;
 }
 
 static int test_dummy (lua_State *L) {
@@ -17,14 +34,15 @@ static int test_dummy (lua_State *L) {
 
 static int test_upvalues (lua_State *L) {
   int i = 1;
-  for (i = 1; i <= 3; ++i)
+  for (i = 1; i <= NUP; ++i)
     lua_pushvalue(L, lua_upvalueindex(i));
-  return 3;
+  return NUP;
 }
 
 static const luaL_Reg funcs[] = {
   { "dummy", test_dummy },
   { "unsigned", test_unsigned },
+  { "uservalue", test_uservalue },
   { NULL, NULL }
 };
 
@@ -35,12 +53,12 @@ static const luaL_Reg more_funcs[] = {
 };
 
 int luaopen_testmod (lua_State *L) {
+  int i = 1;
   luaL_newlib(L, funcs);
   /* defeats the purpose of luaL_newlib, but this is test code: */
-  lua_pushnumber(L, 1);
-  lua_pushnumber(L, 2);
-  lua_pushnumber(L, 3);
-  luaL_setfuncs(L, more_funcs, 3);
+  for (i = 1; i <= NUP; ++i)
+    lua_pushnumber(L, i);
+  luaL_setfuncs(L, more_funcs, NUP);
   return 1;
 }
 
