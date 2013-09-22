@@ -44,6 +44,10 @@ lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def);
 
 #endif /* Lua 5.0 *or* 5.1 */
 
+int lua_absindex (lua_State *L, int i);
+void lua_copy (lua_State *L, int from, int to);
+void lua_rawgetp (lua_State *L, int i, const void *p);
+void lua_rawsetp (lua_State *L, int i, const void *p);
 void *luaL_testudata (lua_State *L, int i, const char *tname);
 void lua_len (lua_State *L, int i);
 lua_Number lua_tonumberx (lua_State *L, int i, int *isnum);

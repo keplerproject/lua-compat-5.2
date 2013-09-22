@@ -5,6 +5,24 @@
 
 #define NUP 3
 
+static int test_absindex (lua_State *L) {
+  int i = 1;
+  for (i = 1; i <= NUP; ++i)
+    lua_pushvalue(L, lua_absindex(L, lua_upvalueindex(i)));
+  lua_pushvalue(L, lua_absindex(L, LUA_REGISTRYINDEX));
+  lua_pushstring(L, lua_typename(L, lua_type(L, lua_absindex(L, -1))));
+  lua_replace(L, lua_absindex(L, -2));
+  lua_pushvalue(L, lua_absindex(L, -2));
+  lua_pushvalue(L, lua_absindex(L, -4));
+  lua_pushvalue(L, lua_absindex(L, -6));
+  i += 3;
+  lua_pushvalue(L, lua_absindex(L, 1));
+  lua_pushvalue(L, lua_absindex(L, 2));
+  lua_pushvalue(L, lua_absindex(L, 3));
+  i += 3;
+  return i;
+}
+
 static int test_globals (lua_State *L) {
   lua_pushglobaltable(L);
   return 1;
@@ -37,6 +55,30 @@ static int test_optunsigned (lua_State *L) {
 static int test_len (lua_State *L) {
   luaL_checkany(L, 1);
   lua_len(L, 1);
+  return 1;
+}
+
+static int test_copy (lua_State *L) {
+  int args = lua_gettop(L);
+  if (args >= 2) {
+    int i = 0;
+    for (i = args-1; i > 0; --i)
+      lua_copy(L, args, i);
+  }
+  return args;
+}
+
+/* need an address */
+static char const dummy = 0;
+
+static int test_rawxetp (lua_State *L) {
+  if (lua_gettop(L) > 0)
+    lua_pushvalue(L, 1);
+  else
+    lua_pushliteral(L, "hello again");
+  lua_rawsetp(L, LUA_REGISTRYINDEX, &dummy);
+  lua_settop(L, 0);
+  lua_rawgetp(L, LUA_REGISTRYINDEX, &dummy);
   return 1;
 }
 
@@ -86,6 +128,8 @@ static const luaL_Reg funcs[] = {
   { "unsigned", test_unsigned },
   { "optunsigned", test_optunsigned },
   { "len", test_len },
+  { "copy", test_copy },
+  { "rawxetp", test_rawxetp },
   { "udata", test_udata },
   { "uservalue", test_uservalue },
   { "globals", test_globals },
@@ -93,8 +137,8 @@ static const luaL_Reg funcs[] = {
 };
 
 static const luaL_Reg more_funcs[] = {
-  { "getupvalues1", test_upvalues },
-  { "getupvalues2", test_upvalues },
+  { "getupvalues", test_upvalues },
+  { "absindex", test_absindex },
   { NULL, NULL }
 };
 

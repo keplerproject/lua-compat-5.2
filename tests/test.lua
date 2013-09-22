@@ -393,12 +393,15 @@ do
       print("C API", mod.len("123"))
       print("C API", mod.len({ 1, 2, 3}))
       print("C API", pcall(mod.len, true))
+      print("C API", mod.copy(true, "string", {}, 1))
+      print("C API", mod.rawxetp())
+      print("C API", mod.rawxetp("I'm back"))
       print("C API", F(mod.globals()), mod.globals() == _G)
       print("C API", F(mod.udata()))
       print("C API", pcall(mod.udata,"nosuchtype"))
       print("C API", mod.uservalue())
-      print("C API", mod.getupvalues1())
-      print("C API", mod.getupvalues2())
+      print("C API", mod.getupvalues())
+      print("C API", mod.absindex("hi", true))
    end
 end
 ____________________________________________________________''

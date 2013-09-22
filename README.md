@@ -82,17 +82,17 @@ with the rest of your code as usual.
 * `luaL_Reg` (for Lua 5.0)
 * `luaL_Unsigned`
 * `luaL_addchar` (for Lua 5.0)
-* `lua_pushunsigned`
-* `luaL_checkunsigned`
-* `luaL_optunsigned`
+* `lua_absindex`
 * `lua_tonumberx`
-* `lua_tounsignedx`
-* `lua_tounsigned`
-* `lua_len`
-* `lua_rawlen`
+* `lua_tounsignedx` and `lua_tounsigned`
+* `luaL_checkunsigned` and `luaL_optunsigned`
+* `lua_len` and `lua_rawlen`
+* `lua_rawgetp` and `lua_rawsetp`
+* `lua_copy`
 * `lua_getuservalue` (in Lua 5.1 all userdata have an env by default)
 * `lua_setuservalue` (sets `_G` as env instead of `nil`)
 * `lua_pushglobaltable`
+* `lua_pushunsigned`
 * `luaL_testudata`
 * `luaL_setfuncs`
 * `luaL_newlib`

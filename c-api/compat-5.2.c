@@ -4,6 +4,35 @@
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
+int lua_absindex (lua_State *L, int i) {
+  if (i < 0 && i > LUA_REGISTRYINDEX)
+    i += lua_gettop(L) + 1;
+  return i;
+}
+
+
+void lua_copy (lua_State *L, int from, int to) {
+  int abs_to = lua_absindex(L, to);
+  luaL_checkstack(L, 1, "not enough stack slots");
+  lua_pushvalue(L, from);
+  lua_replace(L, abs_to);
+}
+
+
+void lua_rawgetp (lua_State *L, int i, const void *p) {
+  int abs_i = lua_absindex(L, i);
+  lua_pushlightuserdata(L, (void*)p);
+  lua_rawget(L, abs_i);
+}
+
+void lua_rawsetp (lua_State *L, int i, const void *p) {
+  int abs_i = lua_absindex(L, i);
+  lua_pushlightuserdata(L, (void*)p);
+  lua_insert(L, -2);
+  lua_rawset(L, abs_i);
+}
+
+
 void *luaL_testudata (lua_State *L, int i, const char *tname) {
   void *p = lua_touserdata(L, i);
   if (p == NULL || !lua_getmetatable(L, i))
