@@ -48,7 +48,7 @@ end
 
 
 package.path = "../?.lua;" .. package.path
-package.cpath = "../?.so;" .. package.path
+package.cpath = "../?.so;" .. package.cpath
 -- load compatibility functions (in Lua 5.1)
 require("compat52")
 
@@ -364,6 +364,45 @@ do
       f:close()
    end))
    os.remove("data.txt")
+end
+____________________________________________________________''
+do
+   local modname = _VERSION:gsub("^.*(%d+)%.(%d+).-$", "%1%2-testmod")
+   local ok, mod = pcall(require, modname)
+   if not ok then
+      io.write("###  no ", modname, ".so or ", modname, ".dll!  ###\n")
+      io.write("'require' claimed: ", mod, "\n")
+      io.write("###         Skipping C API tests!         ###\n")
+   else
+      print("C API", mod.tonumber(12))
+      print("C API", mod.tonumber("12"))
+      print("C API", mod.tonumber("0"))
+      print("C API", mod.tonumber(false))
+      print("C API", mod.tonumber("error"))
+      print("C API", mod.unsigned(1))
+      print("C API", mod.unsigned(2^31+1))
+      print("C API", mod.unsigned(2^32+1))
+      print("C API", mod.unsigned(-1))
+      print("C API", mod.unsigned(2^56))
+      print("C API", mod.unsigned("17"))
+      print("C API", pcall(mod.unsigned, "0"))
+      print("C API", pcall(mod.unsigned, true))
+      print("C API", mod.optunsigned())
+      print("C API", mod.optunsigned(42))
+      print("C API", pcall(mod.optunsigned, true))
+      print("C API", mod.len("123"))
+      print("C API", mod.len({ 1, 2, 3}))
+      print("C API", pcall(mod.len, true))
+      print("C API", mod.copy(true, "string", {}, 1))
+      print("C API", mod.rawxetp())
+      print("C API", mod.rawxetp("I'm back"))
+      print("C API", F(mod.globals()), mod.globals() == _G)
+      print("C API", F(mod.udata()))
+      print("C API", pcall(mod.udata,"nosuchtype"))
+      print("C API", mod.uservalue())
+      print("C API", mod.getupvalues())
+      print("C API", mod.absindex("hi", true))
+   end
 end
 ____________________________________________________________''
 io.write("###  Output written to ", outfile, "!  ###\n")
