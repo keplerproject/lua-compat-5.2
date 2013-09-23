@@ -5,6 +5,17 @@
 
 #define NUP 3
 
+static int test_newproxy (lua_State *L) {
+  lua_settop(L, 0);
+  lua_newuserdata(L, 0);
+  lua_newtable(L);
+  lua_pushvalue(L, -1);
+  lua_pushboolean(L, 1);
+  lua_setfield(L, -2, "__gc");
+  lua_setmetatable(L, -3);
+  return 2;
+}
+
 static int test_absindex (lua_State *L) {
   int i = 1;
   for (i = 1; i <= NUP; ++i)
@@ -38,6 +49,16 @@ static int test_tonumber (lua_State *L) {
   return 1;
 }
 
+static int test_tointeger (lua_State *L) {
+  int isnum = 0;
+  lua_Integer n = lua_tointegerx(L, 1, &isnum);
+  if (!isnum)
+    lua_pushnil(L);
+  else
+    lua_pushinteger(L, n);
+  return 1;
+}
+
 static int test_unsigned (lua_State *L) {
   lua_Unsigned u = luaL_checkunsigned(L, 1);
   lua_Unsigned u2 = lua_tounsigned(L, 1);
@@ -55,7 +76,8 @@ static int test_optunsigned (lua_State *L) {
 static int test_len (lua_State *L) {
   luaL_checkany(L, 1);
   lua_len(L, 1);
-  return 1;
+  lua_pushinteger(L, luaL_len(L, 1));
+  return 2;
 }
 
 static int test_copy (lua_State *L) {
@@ -102,6 +124,17 @@ static int test_udata (lua_State *L) {
   return 2;
 }
 
+static int test_subtable (lua_State *L) {
+  luaL_checktype(L, 1, LUA_TTABLE);
+  lua_settop(L, 1);
+  if (luaL_getsubtable(L, 1, "xxx")) {
+    lua_pushliteral(L, "oldtable");
+  } else {
+    lua_pushliteral(L, "newtable");
+  }
+  return 2;
+}
+
 static int test_uservalue (lua_State *L) {
   void *udata = lua_newuserdata(L, 1);
   int ui = lua_gettop(L);
@@ -124,12 +157,15 @@ static int test_upvalues (lua_State *L) {
 }
 
 static const luaL_Reg funcs[] = {
+  { "newproxy", test_newproxy },
   { "tonumber", test_tonumber },
+  { "tointeger", test_tointeger },
   { "unsigned", test_unsigned },
   { "optunsigned", test_optunsigned },
   { "len", test_len },
   { "copy", test_copy },
   { "rawxetp", test_rawxetp },
+  { "subtable", test_subtable },
   { "udata", test_udata },
   { "uservalue", test_uservalue },
   { "globals", test_globals },

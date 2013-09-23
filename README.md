@@ -83,10 +83,10 @@ with the rest of your code as usual.
 * `luaL_Unsigned`
 * `luaL_addchar` (for Lua 5.0)
 * `lua_absindex`
-* `lua_tonumberx`
+* `lua_tonumberx` and `lua_tointegerx`
 * `lua_tounsignedx` and `lua_tounsigned`
 * `luaL_checkunsigned` and `luaL_optunsigned`
-* `lua_len` and `lua_rawlen`
+* `lua_len`, `lua_rawlen`, and `luaL_len`
 * `lua_rawgetp` and `lua_rawsetp`
 * `lua_copy`
 * `lua_getuservalue` (in Lua 5.1 all userdata have an env by default)
@@ -94,9 +94,9 @@ with the rest of your code as usual.
 * `lua_pushglobaltable`
 * `lua_pushunsigned`
 * `luaL_testudata`
-* `luaL_setfuncs`
-* `luaL_newlib`
+* `luaL_setfuncs` and `luaL_newlib`
 * `luaL_setmetatable`
+* `luaL_getsubtable`
 
 ## What's not implemented
 

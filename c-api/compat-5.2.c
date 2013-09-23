@@ -66,6 +66,17 @@ void lua_len (lua_State *L, int i) {
 }
 
 
+int luaL_len (lua_State *L, int i) {
+  int res = 0, isnum = 0;
+  lua_len(L, i);
+  res = (int)lua_tointegerx(L, -1, &isnum);
+  lua_pop(L, 1);
+  if (!isnum)
+    luaL_error(L, "object length is not a number");
+  return res;
+}
+
+
 lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
   lua_Number n = lua_tonumber(L, i);
   if (isnum != NULL) {
@@ -127,6 +138,18 @@ void luaL_setmetatable (lua_State *L, const char *tname) {
   lua_setmetatable(L, -2);
 }
 
+
+int luaL_getsubtable (lua_State *L, int i, const char *name) {
+  int abs_i = lua_absindex(L, i);
+  lua_getfield(L, abs_i, name);
+  if (lua_istable(L, -1))
+    return 1;
+  lua_pop(L, 1);
+  lua_newtable(L);
+  lua_pushvalue(L, -1);
+  lua_setfield(L, abs_i, name);
+  return 0;
+}
 
 #endif /* Lua 5.0 or Lua 5.1 */
 
@@ -273,6 +296,15 @@ lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
 
 lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def) {
   return luaL_opt(L, luaL_checkunsigned, i, def);
+}
+
+
+lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum) {
+  lua_Integer n = lua_tointeger(L, i);
+  if (isnum != NULL) {
+    *isnum = (n != 0 || lua_isnumber(L, i));
+  }
+  return n;
 }
 
 
