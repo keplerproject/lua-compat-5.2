@@ -61,7 +61,7 @@ void lua_len (lua_State *L, int i) {
       /* maybe fall through */
     default:
       luaL_error(L, "attempt to get length of a %s value",
-                 lua_typename(L, i));
+                 lua_typename(L, lua_type(L, i)));
   }
 }
 
