@@ -27,6 +27,7 @@ void lua_rawgetp (lua_State *L, int i, const void *p) {
 
 void lua_rawsetp (lua_State *L, int i, const void *p) {
   int abs_i = lua_absindex(L, i);
+  luaL_checkstack(L, 1, "not enough stack slots");
   lua_pushlightuserdata(L, (void*)p);
   lua_insert(L, -2);
   lua_rawset(L, abs_i);
@@ -35,6 +36,7 @@ void lua_rawsetp (lua_State *L, int i, const void *p) {
 
 void *luaL_testudata (lua_State *L, int i, const char *tname) {
   void *p = lua_touserdata(L, i);
+  luaL_checkstack(L, 2, "not enough stack slots");
   if (p == NULL || !lua_getmetatable(L, i))
     return NULL;
   else {
@@ -113,6 +115,7 @@ void luaL_setmetatable (lua_State *L, const char *tname) {
 
 int luaL_getsubtable (lua_State *L, int i, const char *name) {
   int abs_i = lua_absindex(L, i);
+  luaL_checkstack(L, 3, "not enough stack slots");
   lua_pushstring(L, name);
   lua_gettable(L, abs_i);
   if (lua_istable(L, -1))
@@ -301,6 +304,7 @@ void lua_len (lua_State *L, int i) {
 
 int luaL_len (lua_State *L, int i) {
   int res = 0, isnum = 0;
+  luaL_checkstack(L, 1, "not enough stack slots");
   lua_len(L, i);
   res = (int)lua_tointegerx(L, -1, &isnum);
   lua_pop(L, 1);
