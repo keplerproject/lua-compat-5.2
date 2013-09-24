@@ -46,6 +46,8 @@ lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def);
 #define lua_newuserdata(L, s) newuserdatax(L, s)
 #endif
 
+#define COMPAT_5_2_KEY "COMPAT_5_2_KEY"
+
 #endif /* Lua 5.0 *or* 5.1 */
 
 int lua_absindex (lua_State *L, int i);
