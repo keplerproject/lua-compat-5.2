@@ -83,7 +83,7 @@ void lua_getuservalue (lua_State *L, int i) {
   if (lua_istable(L, -1)) {
 	lua_pushnil(L);
 	if (!lua_next(L, -2)) { /* The table is empty - might be the marker */
-		lua_pushstring(L, COMPAT_5_2_KEY);
+		lua_pushliteral(L, COMPAT_5_2_KEY);
 		lua_rawget(L, LUA_REGISTRYINDEX);
 		if (lua_rawequal(L, -1, -2)) { /* It is the marker - return nil */
 			lua_pop(L, 2);
@@ -104,13 +104,13 @@ void lua_setuservalue (lua_State *L, int i) {
   luaL_checktype(L, i, LUA_TUSERDATA);
   if (lua_isnil(L, -1)) { /* Fetch marker empty table from registry */
 	lua_pop(L,1);
-	lua_pushstring(L, COMPAT_5_2_KEY);
+	lua_pushliteral(L, COMPAT_5_2_KEY);
 	lua_rawget(L, LUA_REGISTRYINDEX);
 	if (!lua_istable(L, -1)) { /* Create marker empty table if missing */
 		lua_pop(L, 1);
 		luaL_checkstack(L, 2, "not enough stack slots");
 		lua_createtable(L,0,0);
-		lua_pushstring(L, COMPAT_5_2_KEY);
+		lua_pushliteral(L, COMPAT_5_2_KEY);
 		lua_pushvalue(L,-2);
 		lua_rawset(L, LUA_REGISTRYINDEX);
 	}
