@@ -29,13 +29,16 @@ do
       out:flush()
    end
 
-   local type = type
-   function F(v, ...)
-      local t = type(v)
-      if t ~= "string" and t ~= "number" and t ~= "boolean" then
-         v = t
+   local type, unpack = type, table.unpack or unpack
+   function F(...)
+      local args, n = { ... }, select('#', ...)
+      for i = 1, n do
+         local t = type(args[i])
+         if t ~= "string" and t ~= "number" and t ~= "boolean" then
+            args[i] = t
+         end
       end
-      return v, ...
+      return unpack(args, 1, n)
    end
 
    local assert, io = assert, io
@@ -66,6 +69,13 @@ print("bit32.lshift()", bit32.lshift and bit32.lshift(2^31+2^30, 1))
 print("bit32.rrotate()", bit32.rrotate and bit32.rrotate(2, 2))
 print("bit32.rshift()", bit32.rshift and bit32.rshift(16, 3))
 ____________________________________________________________''
+print("debug.getuservalue()", F(debug.getuservalue(false)))
+print("debug.setuservalue()", pcall(function()
+  debug.setuservalue(false, {})
+end))
+print("debug.setuservalue()", pcall(function()
+  debug.setuservalue(io.stderr, 1)
+end))
 print("debug.setmetatable()", F(debug.setmetatable({}, {})))
 ____________________________________________________________''
 do
@@ -413,10 +423,15 @@ do
       local x, msg = mod.subtable(t)
       print("C API", F(x, msg, x == t.xxx))
       print("C API", F(mod.udata()))
-      print("C API", pcall(mod.udata,"nosuchtype"))
-      print("C API", mod.uservalue())
+      print("C API", mod.udata("nosuchtype"))
+      print("C API", F(mod.uservalue()))
       print("C API", mod.getupvalues())
       print("C API", mod.absindex("hi", true))
+      print("debug.getuservalue()", F(debug.getuservalue(ud)))
+      print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
+      print("debug.getuservalue()", F(debug.getuservalue(ud)))
+      print("debug.setuservalue()", F(debug.setuservalue(ud, nil)))
+      print("debug.getuservalue()", F(debug.getuservalue(ud)))
    end
 end
 ____________________________________________________________''

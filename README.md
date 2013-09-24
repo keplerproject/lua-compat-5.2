@@ -89,8 +89,7 @@ with the rest of your code as usual.
 * `lua_len`, `lua_rawlen`, and `luaL_len`
 * `lua_rawgetp` and `lua_rawsetp`
 * `lua_copy`
-* `lua_getuservalue` (in Lua 5.1 all userdata have an env by default)
-* `lua_setuservalue` (sets `_G` as env instead of `nil`)
+* `lua_getuservalue` and `lua_setuservalue`
 * `lua_pushglobaltable`
 * `lua_pushunsigned`
 * `luaL_testudata`

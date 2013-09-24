@@ -60,32 +60,53 @@ lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
 }
 
 
+#define PACKAGE_KEY "_COMPAT52_PACKAGE"
+
+static void push_package_table (lua_State *L) {
+  lua_pushliteral(L, PACKAGE_KEY);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (!lua_istable(L, -1)) {
+    lua_pop(L, 1);
+    /* try to get package table from globals */
+    lua_pushliteral(L, "package");
+    lua_rawget(L, LUA_GLOBALSINDEX);
+    if (lua_istable(L, -1)) {
+      lua_pushliteral(L, PACKAGE_KEY);
+      lua_pushvalue(L, -2);
+      lua_rawset(L, LUA_REGISTRYINDEX);
+    }
+  }
+}
+
 void lua_getuservalue (lua_State *L, int i) {
+  luaL_checktype(L, i, LUA_TUSERDATA);
   luaL_checkstack(L, 2, "not enough stack slots");
   lua_getfenv(L, i);
-  if (!lua_isnil(L, -1)) {
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
+  lua_pushvalue(L, LUA_GLOBALSINDEX);
+  if (lua_rawequal(L, -1, -2)) {
+    lua_pop(L, 1);
+    lua_pushnil(L);
+    lua_replace(L, -2);
+  } else {
+    lua_pop(L, 1);
+    push_package_table(L);
     if (lua_rawequal(L, -1, -2)) {
       lua_pop(L, 1);
       lua_pushnil(L);
       lua_replace(L, -2);
-    }
-  } else {
-    lua_pop(L, 1);
-    luaL_checktype(L, i, LUA_TUSERDATA);
+    } else
+      lua_pop(L, 1);
   }
 }
 
 void lua_setuservalue (lua_State *L, int i) {
+  luaL_checktype(L, i, LUA_TUSERDATA);
   if (lua_isnil(L, -1)) {
     luaL_checkstack(L, 1, "not enough stack slots");
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     lua_replace(L, -2);
   }
-  if (!lua_setfenv(L, i)) {
-    lua_pushnil(L); /* setfenv popped one, so i might be invalid */
-    luaL_checktype(L, i, LUA_TUSERDATA);
-  }
+  lua_setfenv(L, i);
 }
 
 

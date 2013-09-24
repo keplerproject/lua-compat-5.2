@@ -2,7 +2,7 @@
 -- utility module to make the Lua 5.1 standard libraries behave more like Lua 5.2
 
 if _VERSION == "Lua 5.1" then
-   
+
    bit32 = require("bit32")
 
    -- the most powerful getmetatable we can get (preferably from debug)
@@ -10,8 +10,33 @@ if _VERSION == "Lua 5.1" then
 
    if type(debug) == "table" then
 
-      debug.setuservalue = debug.setfenv
-      debug.getuservalue = debug.getfenv
+      local _G, package = _G, package
+      local debug_setfenv = debug.setfenv
+      debug.setuservalue = function(obj, value)
+         if type(obj) ~= "userdata" then
+            error("bad argument #1 to 'setuservalue' (userdata expected, got "..
+                  type(obj)..")", 2)
+         end
+         if value == nil then value = _G end
+         if type(value) ~= "table" then
+            error("bad argument #2 to 'setuservalue' (table expected, got "..
+                  type(value)..")", 2)
+         end
+         return debug_setfenv(obj, value)
+      end
+
+      local debug_getfenv = debug.getfenv
+      debug.getuservalue = function(obj)
+         if type(obj) ~= "userdata" then
+            return nil
+         else
+            local v = debug_getfenv(obj)
+            if v == _G or v == package then
+               return nil
+            end
+            return v
+         end
+      end
 
       if type(debug.getmetatable) == "function" then
          sudo_getmetatable = debug.getmetatable
@@ -24,6 +49,7 @@ if _VERSION == "Lua 5.1" then
             return value
          end
       end
+
    end
 
    local _pairs = pairs
@@ -45,7 +71,7 @@ if _VERSION == "Lua 5.1" then
          return _ipairs(t)
       end
    end
-   
+
    local _setfenv = setfenv
 
    local function check_mode(mode, prefix)
@@ -172,7 +198,7 @@ if _VERSION == "Lua 5.1" then
       end
       return v
    end
-   
+
    local os_execute = os.execute
    os.execute = function(cmd)
       local code = os_execute(cmd)
@@ -183,7 +209,7 @@ if _VERSION == "Lua 5.1" then
          return nil, "exit", bit32.rshift(code, 8)
       end
    end
-   
+
    table.pack = function(...)
       return { n = select('#', ...), ... }
    end
@@ -191,7 +217,7 @@ if _VERSION == "Lua 5.1" then
    table.unpack = unpack
 
    local main_coroutine = coroutine.create(function() end)
-   
+
    local coroutine_running = coroutine.running
    coroutine.running = function()
       local co = coroutine_running()
@@ -201,7 +227,7 @@ if _VERSION == "Lua 5.1" then
          return main_coroutine, true
       end
    end
-   
+
    local coroutine_yield = coroutine.yield
    coroutine.yield = function(...)
       local co = coroutine_running()
@@ -211,7 +237,7 @@ if _VERSION == "Lua 5.1" then
          error("attempt to yield from outside a coroutine", 0)
       end
    end
-   
+
    local coroutine_resume = coroutine.resume
    coroutine.resume = function(co, ...)
       if co == main_coroutine then
@@ -220,7 +246,7 @@ if _VERSION == "Lua 5.1" then
          return coroutine_resume(co, ...)
       end
    end
-   
+
    local coroutine_status = coroutine.status
    coroutine.status = function(co)
       local notmain = coroutine_running()
@@ -274,7 +300,7 @@ if _VERSION == "Lua 5.1" then
    local function fix_pattern(pattern)
       return (string_gsub(pattern, "%z", "%%z"))
    end
-   
+
    local string_find = string.find
    function string.find(s, pattern, ...)
       return string_find(s, fix_pattern(pattern), ...)
