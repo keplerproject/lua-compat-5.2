@@ -76,31 +76,45 @@ lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
 
 
 void lua_getuservalue (lua_State *L, int i) {
+  luaL_checktype(L, i, LUA_TUSERDATA);
   luaL_checkstack(L, 2, "not enough stack slots");
   lua_getfenv(L, i);
-  if (!lua_isnil(L, -1)) {
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
-    if (lua_rawequal(L, -1, -2)) {
-      lua_pop(L, 1);
-      lua_pushnil(L);
-      lua_replace(L, -2);
-    }
-  } else {
+  if (lua_istable(L, -1)) {
+	lua_pushnil(L);
+	if (!lua_next(L, -2)) { /* The table is empty - might be the marker */
+		lua_pushlightuserdata(L, (void*)lua_setuservalue);
+		lua_rawget(L, LUA_REGISTRYINDEX);
+		if (lua_equal(L, -1, -2)) { /* It is the marker - return nil */
+			lua_pop(L, 2);
+			lua_pushnil(L);
+		} else { /* Not the marker - return the actual empty table */
+			lua_pop(L, 1);
+		}
+	} else { /* Not empty, so not the marker - return the table */
+		lua_pop(L, 2);
+	}
+  } else { /* Should never see this, but just in case */
     lua_pop(L, 1);
-    luaL_checktype(L, i, LUA_TUSERDATA);
+	lua_pushnil(L);
   }
 }
 
 void lua_setuservalue (lua_State *L, int i) {
-  if (lua_isnil(L, -1)) {
-    luaL_checkstack(L, 1, "not enough stack slots");
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
-    lua_replace(L, -2);
+  luaL_checktype(L, i, LUA_TUSERDATA);
+  if (lua_isnil(L, -1)) { /* Fetch marker empty table from registry */
+	lua_pop(L,1);
+	lua_pushlightuserdata(L, (void*)lua_setuservalue);
+	lua_rawget(L, LUA_REGISTRYINDEX);
+	if (!lua_istable(L, -1)) { /* Create marker empty table if missing */
+		lua_pop(L, 1);
+		luaL_checkstack(L, 2, "not enough stack slots");
+		lua_createtable(L,0,0);
+		lua_pushlightuserdata(L, (void*)lua_setuservalue);
+		lua_pushvalue(L,-2);
+		lua_rawset(L, LUA_REGISTRYINDEX);
+	}
   }
-  if (!lua_setfenv(L, i)) {
-    lua_pushnil(L); /* setfenv popped one, so i might be invalid */
-    luaL_checktype(L, i, LUA_TUSERDATA);
-  }
+  lua_setfenv(L, i); /* Supplied table or marker empty table */
 }
 
 

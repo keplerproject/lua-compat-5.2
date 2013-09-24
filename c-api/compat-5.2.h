@@ -42,6 +42,8 @@ lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def);
 #define luaL_newlib(L, l) \
   (lua_newtable((L)),luaL_setfuncs((L), (l), 0))
 
+#define lua_newuserdata(L, s) lua_newuserdata(L, s);lua_pushnil(L);lua_setuservalue(L,-2);
+
 #endif /* Lua 5.0 *or* 5.1 */
 
 int lua_absindex (lua_State *L, int i);
