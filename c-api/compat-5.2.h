@@ -42,7 +42,9 @@ lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def);
 #define luaL_newlib(L, l) \
   (lua_newtable((L)),luaL_setfuncs((L), (l), 0))
 
-#define lua_newuserdata(L, s) lua_newuserdata(L, s);lua_pushnil(L);lua_setuservalue(L,-2);
+#if !defined(COMPAT_5_2_C)
+#define lua_newuserdata(L, s) newuserdatax(L, s)
+#endif
 
 #endif /* Lua 5.0 *or* 5.1 */
 
@@ -57,4 +59,4 @@ void lua_getuservalue (lua_State *L, int i);
 void lua_setuservalue (lua_State *L, int i);
 void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);
 void luaL_setmetatable (lua_State *L, const char *tname);
-
+void* newuserdatax (lua_State *L, size_t sz);

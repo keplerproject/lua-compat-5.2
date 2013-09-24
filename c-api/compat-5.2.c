@@ -1,5 +1,6 @@
 #include "lua.h"
 #include "lauxlib.h"
+#define COMPAT_5_2_C
 #include "compat-5.2.h"
 
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
@@ -84,7 +85,7 @@ void lua_getuservalue (lua_State *L, int i) {
 	if (!lua_next(L, -2)) { /* The table is empty - might be the marker */
 		lua_pushlightuserdata(L, (void*)lua_setuservalue);
 		lua_rawget(L, LUA_REGISTRYINDEX);
-		if (lua_equal(L, -1, -2)) { /* It is the marker - return nil */
+		if (lua_rawequal(L, -1, -2)) { /* It is the marker - return nil */
 			lua_pop(L, 2);
 			lua_pushnil(L);
 		} else { /* Not the marker - return the actual empty table */
@@ -117,6 +118,13 @@ void lua_setuservalue (lua_State *L, int i) {
   lua_setfenv(L, i); /* Supplied table or marker empty table */
 }
 
+void* newuserdatax (lua_State *L, size_t sz) {
+	void* r = lua_newuserdata(L, sz);
+	luaL_checkstack(L, 1, "not enough stack slots");
+	lua_pushnil(L);
+	lua_setuservalue(L, -2);
+	return r;
+}
 
 /*
 ** Adapted from Lua 5.2.0
