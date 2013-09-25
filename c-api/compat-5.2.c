@@ -3,6 +3,8 @@
 #define COMPAT_5_2_C
 #include "compat-5.2.h"
 
+#define COMPAT_5_2_KEY "_COMPAT52_NIL"
+
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
 int lua_absindex (lua_State *L, int i) {
