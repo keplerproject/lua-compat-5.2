@@ -7,55 +7,94 @@ if _VERSION == "Lua 5.1" then
 
    require("compat52")
 
-   local exclude_from_G = {
-      module = true,
-      getfenv = true,
-      setfenv = true,
-      loadstring = true,
-      unpack = true,
-      loadlib = true,
-      math = {
-         log10 = true,
-         mod = true,
-      },
-      table = {
-         getn = true,
-         setn = true,
-      },
-      string = {
-         gfind = true,
-      },
-   }
-
    local function not_available()
       error("This function is not available in Lua 5.2!", 2)
    end
 
-   local function make_copy(value, excl)
-      if not excl then
-         return value
-      end
-      if type(value) == "table" and type(excl) == "table" then
-         local newvalue = {}
-         for k,v in pairs(value) do
-            newvalue[k] = make_copy(v, excl[k])
+   local exclude_from_G = {
+      module = not_available,
+      getfenv = not_available,
+      setfenv = not_available,
+      loadstring = not_available,
+      unpack = not_available,
+      loadlib = not_available,
+      math = {
+         log10 = not_available,
+         mod = not_available,
+      },
+      table = {
+         getn = not_available,
+         setn = not_available,
+      },
+      string = {
+         gfind = not_available,
+      },
+   }
+
+   local next = next
+   local function make_pairs_iterator(lookup)
+      return function(st, var)
+         local k, v = next(st, var)
+         if k ~= nil then
+            local new_v = lookup[k]
+            if new_v ~= nil then v = new_v end
+            return k, v
          end
-         return setmetatable({}, {
-            __index = newvalue,
-            __newindex = function(t, k, v)
-               rawset(newvalue, k, v)
-               rawset(value, k, v)
-            end,
-            __pairs = function() return pairs(newvalue) end,
-            __ipairs = function() return ipairs(newvalue) end,
-         }), newvalue
-      else
-         return not_available
       end
    end
 
-   local new_G, G_index = make_copy(_G, exclude_from_G)
-   G_index._G = new_G
+   local rawget = rawget
+   local function make_ipairs_iterator(lookup)
+      return function(st, var)
+         var = var + 1
+         local v = rawget(st, var)
+         if v ~= nil then
+            local new_v = lookup[var]
+            if new_v ~= nil then v = new_v end
+            return var, v
+         end
+      end
+   end
+
+   local function make_copy(value, excl)
+      local v_type, e_type = type(value), type(excl)
+      if v_type == e_type then
+         if v_type == "table" then
+            local l_table = {}
+            for k, v in pairs(excl) do
+               l_table[k] = make_copy(rawget(value, k), v)
+            end
+            return setmetatable({}, {
+               __index = function(_, k)
+                  local v = l_table[k]
+                  if v ~= nil then
+                     return v
+                  else
+                     return value[k]
+                  end
+               end,
+               __newindex = function(_, k, v)
+                  if l_table[k] ~= nil then
+                     l_table[k] = nil
+                  end
+                  value[k] = v
+               end,
+               __pairs = function()
+                  return make_pairs_iterator(l_table), value, nil
+               end,
+               __ipairs = function()
+                  return make_ipairs_iterator(l_table), value, 0
+               end,
+            }), l_table
+         elseif v_type == "function" then
+            return excl
+         end
+      end
+   end
+
+   local new_G, G_lookup = make_copy(_G, exclude_from_G)
+   G_lookup._G = new_G
+
    return function()
       setfenv(2, new_G)
    end
@@ -63,3 +102,4 @@ else
    return function() end
 end
 
+-- vi: set expandtab softtabstop=3 shiftwidth=3 :
