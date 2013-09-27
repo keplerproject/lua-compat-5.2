@@ -138,15 +138,11 @@ static int test_subtable (lua_State *L) {
 static int test_uservalue (lua_State *L) {
   void *udata = lua_newuserdata(L, 1);
   int ui = lua_gettop(L);
-  lua_getuservalue(L, ui);
   lua_newtable(L);
   lua_setuservalue(L, ui);
   lua_getuservalue(L, ui);
-  lua_pushnil(L);
-  lua_setuservalue(L, ui);
-  lua_getuservalue(L, ui);
   (void)udata;
-  return 3;
+  return 1;
 }
 
 static int test_upvalues (lua_State *L) {

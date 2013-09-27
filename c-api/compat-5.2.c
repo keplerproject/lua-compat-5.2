@@ -2,16 +2,22 @@
 #include "lauxlib.h"
 #include "compat-5.2.h"
 
+/* don't compile it again if it already is include via compat-5.2.h */
+#ifndef COMPAT52_C_
+#define COMPAT52_C_
+
+
+/* definitions for Lua 5.0 *and* Lua 5.1 */
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
-int lua_absindex (lua_State *L, int i) {
+COMPAT52_API int lua_absindex (lua_State *L, int i) {
   if (i < 0 && i > LUA_REGISTRYINDEX)
     i += lua_gettop(L) + 1;
   return i;
 }
 
 
-void lua_copy (lua_State *L, int from, int to) {
+COMPAT52_API void lua_copy (lua_State *L, int from, int to) {
   int abs_to = lua_absindex(L, to);
   luaL_checkstack(L, 1, "not enough stack slots");
   lua_pushvalue(L, from);
@@ -19,13 +25,13 @@ void lua_copy (lua_State *L, int from, int to) {
 }
 
 
-void lua_rawgetp (lua_State *L, int i, const void *p) {
+COMPAT52_API void lua_rawgetp (lua_State *L, int i, const void *p) {
   int abs_i = lua_absindex(L, i);
   lua_pushlightuserdata(L, (void*)p);
   lua_rawget(L, abs_i);
 }
 
-void lua_rawsetp (lua_State *L, int i, const void *p) {
+COMPAT52_API void lua_rawsetp (lua_State *L, int i, const void *p) {
   int abs_i = lua_absindex(L, i);
   luaL_checkstack(L, 1, "not enough stack slots");
   lua_pushlightuserdata(L, (void*)p);
@@ -34,7 +40,7 @@ void lua_rawsetp (lua_State *L, int i, const void *p) {
 }
 
 
-void *luaL_testudata (lua_State *L, int i, const char *tname) {
+COMPAT52_API void *luaL_testudata (lua_State *L, int i, const char *tname) {
   void *p = lua_touserdata(L, i);
   luaL_checkstack(L, 2, "not enough stack slots");
   if (p == NULL || !lua_getmetatable(L, i))
@@ -51,7 +57,7 @@ void *luaL_testudata (lua_State *L, int i, const char *tname) {
 }
 
 
-lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
+COMPAT52_API lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
   lua_Number n = lua_tonumber(L, i);
   if (isnum != NULL) {
     *isnum = (n != 0 || lua_isnumber(L, i));
@@ -60,60 +66,7 @@ lua_Number lua_tonumberx (lua_State *L, int i, int *isnum) {
 }
 
 
-#define PACKAGE_KEY "_COMPAT52_PACKAGE"
-
-static void push_package_table (lua_State *L) {
-  lua_pushliteral(L, PACKAGE_KEY);
-  lua_rawget(L, LUA_REGISTRYINDEX);
-  if (!lua_istable(L, -1)) {
-    lua_pop(L, 1);
-    /* try to get package table from globals */
-    lua_pushliteral(L, "package");
-    lua_rawget(L, LUA_GLOBALSINDEX);
-    if (lua_istable(L, -1)) {
-      lua_pushliteral(L, PACKAGE_KEY);
-      lua_pushvalue(L, -2);
-      lua_rawset(L, LUA_REGISTRYINDEX);
-    }
-  }
-}
-
-void lua_getuservalue (lua_State *L, int i) {
-  luaL_checktype(L, i, LUA_TUSERDATA);
-  luaL_checkstack(L, 2, "not enough stack slots");
-  lua_getfenv(L, i);
-  lua_pushvalue(L, LUA_GLOBALSINDEX);
-  if (lua_rawequal(L, -1, -2)) {
-    lua_pop(L, 1);
-    lua_pushnil(L);
-    lua_replace(L, -2);
-  } else {
-    lua_pop(L, 1);
-    push_package_table(L);
-    if (lua_rawequal(L, -1, -2)) {
-      lua_pop(L, 1);
-      lua_pushnil(L);
-      lua_replace(L, -2);
-    } else
-      lua_pop(L, 1);
-  }
-}
-
-void lua_setuservalue (lua_State *L, int i) {
-  luaL_checktype(L, i, LUA_TUSERDATA);
-  if (lua_isnil(L, -1)) {
-    luaL_checkstack(L, 1, "not enough stack slots");
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
-    lua_replace(L, -2);
-  }
-  lua_setfenv(L, i);
-}
-
-
-/*
-** Adapted from Lua 5.2.0
-*/
-void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
+COMPAT52_API void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
   luaL_checkstack(L, nup+1, "too many upvalues");
   for (; l->name != NULL; l++) {  /* fill the table with given functions */
     int i;
@@ -127,14 +80,14 @@ void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
 }
 
 
-void luaL_setmetatable (lua_State *L, const char *tname) {
+COMPAT52_API void luaL_setmetatable (lua_State *L, const char *tname) {
   luaL_checkstack(L, 1, "not enough stack slots");
   luaL_getmetatable(L, tname);
   lua_setmetatable(L, -2);
 }
 
 
-int luaL_getsubtable (lua_State *L, int i, const char *name) {
+COMPAT52_API int luaL_getsubtable (lua_State *L, int i, const char *name) {
   int abs_i = lua_absindex(L, i);
   luaL_checkstack(L, 3, "not enough stack slots");
   lua_pushstring(L, name);
@@ -149,9 +102,11 @@ int luaL_getsubtable (lua_State *L, int i, const char *name) {
   return 0;
 }
 
-#endif /* Lua 5.0 or Lua 5.1 */
+#endif /* Lua 5.0 and Lua 5.1 */
 
 
+
+/* definitions for Lua 5.1 only */
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
 #include <limits.h>
 
@@ -250,9 +205,9 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 /* the following definition assures proper modulo behavior */
 #if defined(LUA_NUMBER_DOUBLE) || defined(LUA_NUMBER_FLOAT)
 #include <math.h>
-#define SUPUNSIGNED	((lua_Number)(~(lua_Unsigned)0) + 1)
+#define LUA_SUPUNSIGNED	((lua_Number)(~(lua_Unsigned)0) + 1)
 #define lua_number2unsigned(i,n)  \
-	((i)=(lua_Unsigned)((n) - floor((n)/SUPUNSIGNED)*SUPUNSIGNED))
+	((i)=(lua_Unsigned)((n) - floor((n)/LUA_SUPUNSIGNED)*LUA_SUPUNSIGNED))
 #else
 #define lua_number2unsigned(i,n)	((i)=(lua_Unsigned)(n))
 #endif
@@ -269,12 +224,12 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 /********************************************************************/
 
 
-void lua_pushunsigned (lua_State *L, lua_Unsigned n) {
+COMPAT52_API void lua_pushunsigned (lua_State *L, lua_Unsigned n) {
   lua_pushnumber(L, lua_unsigned2number(n));
 }
 
 
-lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
+COMPAT52_API lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
   lua_Unsigned result;
   lua_Number n = lua_tonumber(L, i);
   if (n == 0 && !lua_isnumber(L, i))
@@ -284,7 +239,7 @@ lua_Unsigned luaL_checkunsigned (lua_State *L, int i) {
 }
 
 
-lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
+COMPAT52_API lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
   lua_Unsigned result;
   lua_Number n = lua_tonumberx(L, i, isnum);
   lua_number2unsigned(result, n);
@@ -292,12 +247,12 @@ lua_Unsigned lua_tounsignedx (lua_State *L, int i, int *isnum) {
 }
 
 
-lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def) {
+COMPAT52_API lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def) {
   return luaL_opt(L, luaL_checkunsigned, i, def);
 }
 
 
-lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum) {
+COMPAT52_API lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum) {
   lua_Integer n = lua_tointeger(L, i);
   if (isnum != NULL) {
     *isnum = (n != 0 || lua_isnumber(L, i));
@@ -306,7 +261,7 @@ lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum) {
 }
 
 
-void lua_len (lua_State *L, int i) {
+COMPAT52_API void lua_len (lua_State *L, int i) {
   switch (lua_type(L, i)) {
     case LUA_TSTRING: /* fall through */
     case LUA_TTABLE:
@@ -323,7 +278,7 @@ void lua_len (lua_State *L, int i) {
 }
 
 
-int luaL_len (lua_State *L, int i) {
+COMPAT52_API int luaL_len (lua_State *L, int i) {
   int res = 0, isnum = 0;
   luaL_checkstack(L, 1, "not enough stack slots");
   lua_len(L, i);
@@ -334,7 +289,10 @@ int luaL_len (lua_State *L, int i) {
   return res;
 }
 
-#endif /* LUA_VERSION_NUM == 501 */
+#endif /* Lua 5.1 only */
+
+
+#endif /* COMPAT52_C_ */
 
 
 /*********************************************************************
