@@ -45,7 +45,7 @@ with the LUA_COMPAT_ALL flag disabled:
 require("compat52.strict")
 ```
 
-The "strict mode" changed the global environment, so it affects all
+The "strict mode" changes the global environment, so it affects all
 loaded modules and chunks. If this is undesirable, you can use the
 "modular strict mode" which only replaces the environment of the current
 file. The usage is slightly different (you have to call the return value
@@ -54,6 +54,8 @@ of `require`):
 ```lua
 require("compat52.mstrict")()
 ```
+
+The effects of `compat52` are still in effect for all chunks, though.
 
 ### C code
 
