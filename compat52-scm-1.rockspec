@@ -24,5 +24,6 @@ build = {
    modules = {
       ["compat52"] = "compat52.lua",
       ["compat52.strict"] = "compat52/strict.lua",
+      ["compat52.mstrict"] = "compat52/mstrict.lua",
    }
 }
