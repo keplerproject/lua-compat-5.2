@@ -102,22 +102,32 @@ void lua_getuservalue (lua_State *L, int i) {
   }
 }
 
+void createnilsub(lua_State *L) {
+	lua_createtable(L,0,0);
+	lua_pushliteral(L, COMPAT_5_2_KEY);
+	lua_pushvalue(L,-2);
+	lua_rawset(L, LUA_REGISTRYINDEX);
+}
+
 void lua_setuservalue (lua_State *L, int i) {
   luaL_checktype(L, i, LUA_TUSERDATA);
-  if (lua_isnil(L, -1)) { /* Fetch marker empty table from registry */
+  if (lua_isnil(L, -1)) { /* Fetch nil substitute table from registry */
 	lua_pop(L,1);
+	luaL_checkstack(L, 3, "not enough stack slots");
 	lua_pushliteral(L, COMPAT_5_2_KEY);
 	lua_rawget(L, LUA_REGISTRYINDEX);
-	if (!lua_istable(L, -1)) { /* Create marker empty table if missing */
+	if (lua_istable(L, -1)) { /* Replace nil substitute table if not empty */
+		lua_pushnil(L);
+		if (lua_next(L, -2)) {
+			lua_pop(L, 2);
+			createnilsub(L);
+		}
+	} else { /* Create nil substitute table if missing */
 		lua_pop(L, 1);
-		luaL_checkstack(L, 2, "not enough stack slots");
-		lua_createtable(L,0,0);
-		lua_pushliteral(L, COMPAT_5_2_KEY);
-		lua_pushvalue(L,-2);
-		lua_rawset(L, LUA_REGISTRYINDEX);
+		createnilsub(L);
 	}
   }
-  lua_setfenv(L, i); /* Supplied table or marker empty table */
+  lua_setfenv(L, i); /* Supplied table or nil substitute table */
 }
 
 void* newuserdatax (lua_State *L, size_t sz) {
