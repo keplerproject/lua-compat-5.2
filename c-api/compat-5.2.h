@@ -87,14 +87,20 @@ COMPAT52_API int luaL_len (lua_State *L, int i);
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
 #define lua_pushglobaltable(L) \
-  lua_pushvalue((L), LUA_GLOBALSINDEX)
+  lua_pushvalue(L, LUA_GLOBALSINDEX)
 
 #define luaL_newlib(L, l) \
-  (lua_newtable((L)),luaL_setfuncs((L), (l), 0))
+  (lua_newtable(L),luaL_setfuncs(L, l, 0))
 
-#define lua_getuservalue(L, i) lua_getfenv((L), (i))
+#define lua_getuservalue(L, i) \
+  (lua_getfenv(L, i))
 #define lua_setuservalue(L, i) \
-  (luaL_checktype((L), -1, LUA_TTABLE), lua_setfenv((L), (i)))
+  (luaL_checktype(L, -1, LUA_TTABLE), lua_setfenv(L, i))
+
+#define lua_callk(L, na, nr, ctx, cont) \
+  (lua_call(L, na, nr))
+#define lua_pcallk(L, na, nr, err, ctx, cont) \
+  (lua_pcall(L, na, nr, err))
 
 #define lua_absindex COMPAT52_CONCAT(COMPAT52_PREFIX, _absindex)
 COMPAT52_API int lua_absindex (lua_State *L, int i);
