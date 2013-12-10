@@ -89,8 +89,10 @@ COMPAT52_API int luaL_len (lua_State *L, int i);
 #define lua_pushglobaltable(L) \
   lua_pushvalue(L, LUA_GLOBALSINDEX)
 
+#define luaL_newlibtable(L, l) \
+  (lua_createtable(L, 0, sizeof(l)/sizeof(*(l))-1))
 #define luaL_newlib(L, l) \
-  (lua_newtable(L),luaL_setfuncs(L, l, 0))
+  (luaL_newlibtable(L, l),luaL_setfuncs(L, l, 0))
 
 #define lua_getuservalue(L, i) \
   (lua_getfenv(L, i))
