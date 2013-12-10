@@ -25,7 +25,7 @@ build = {
    type = "builtin",
    modules = {
       bit32 = {
-         sources = { "lbitlib.c", "c-api/compat-5.2.c" },
+         sources = { "lbitlib.c" },
          incdirs = { "c-api" },
       }
    }
