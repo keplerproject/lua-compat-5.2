@@ -39,7 +39,7 @@ adds new ones to bring your environment closer to that of Lua 5.2.
 
 You may also use the "strict mode" which removes from Lua 5.1 functions
 that were deprecated in 5.2; that is the equivalent of running Lua 5.2
-with the LUA_COMPAT_ALL flag disabled:
+with the `LUA_COMPAT_ALL` flag disabled:
 
 ```lua
 require("compat52.strict")
@@ -55,12 +55,23 @@ of `require`):
 require("compat52.mstrict")()
 ```
 
-The effects of `compat52` are still in effect for all chunks, though.
+The additions made by `compat52` are still in effect for all chunks, though.
 
 ### C code
 
-Add the files `compat-5.2.c` and `compat-5.2.h` to your project and link it
-with the rest of your code as usual.
+There are two ways of adding the C API compatibility functions/macros to
+your project:
+* If `COMPAT52_PREFIX` is *not* `#define`d, `compat-5.2.h` `#include`s
+  `compat-5.2.c`, and all functions are made `static`. You don't have to
+  compile/link/add `compat-5.2.c` yourself. This is useful for one-file
+  projects.
+* If `COMPAT52_PREFIX` is `#define`d, all exported functions are renamed
+  behind the scenes using this prefix to avoid linker conflicts with other
+  code using this package. This doesn't change the way you call the
+  compatibility functions in your code. You have to compile and link
+  `compat-5.2.c` to your project yourself. You can change the way the
+  functions are exported using the `COMPAT52_API` macro (e.g. if you need
+  some `__declspec` magic).
 
 ## What's implemented
 
