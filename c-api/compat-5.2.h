@@ -45,6 +45,9 @@
   ((void)((B)->p < ((B)->buffer+LUAL_BUFFERSIZE) || luaL_prepbuffer(B)), \
    (*(B)->p++ = (char)(c)))
 
+#define lua_createtable(L, narr, nrec) \
+  ((void)narr,(void)nrec,lua_newtable(L))
+
 #endif /* Lua 5.0 */
 
 
