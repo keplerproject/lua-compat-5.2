@@ -101,18 +101,18 @@ with the rest of your code as usual.
 * `lua_len`, `lua_rawlen`, and `luaL_len`
 * `lua_rawgetp` and `lua_rawsetp`
 * `lua_copy`
-* `lua_getuservalue` and `lua_setuservalue`
+* `lua_getuservalue` and `lua_setuservalue` (limited compatibility)
 * `lua_pushglobaltable`
 * `lua_pushunsigned`
+* `lua_callk` and `lua_pcallk` (limited compatibility)
 * `luaL_testudata`
-* `luaL_setfuncs` and `luaL_newlib`
+* `luaL_setfuncs`, `luaL_newlibtable`, and `luaL_newlib`
 * `luaL_setmetatable`
 * `luaL_getsubtable`
 
 ## What's not implemented
 
-* most C APIs
-* _ENV
+* `_ENV`
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
   to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.
@@ -122,6 +122,25 @@ with the rest of your code as usual.
 * `"*"` as second argument for `package.loadlib`
 * some functions in the debug library
 * anything else missing in the Lua libraries?
+* the following C API functions/macros:
+  * `lua_arith`
+  * `lua_compare`
+  * `lua_getctx`
+  * `lua_upvalueid`
+  * `lua_upvaluejoin`
+  * `lua_version`
+  * `lua_yieldk`
+  * `luaL_buffinitsize`
+  * `luaL_checkversion`
+  * `luaL_execresult`
+  * `luaL_fileresult`
+  * `luaL_loadbufferx`
+  * `luaL_loadfilex`
+  * `luaL_prepbuffsize`
+  * `luaL_pushresultsize`
+  * `luaL_requiref`
+  * `luaL_tolstring`
+  * `luaL_traceback`
 
 ## See also
 
