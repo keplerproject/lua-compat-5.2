@@ -148,4 +148,4 @@ This package contains code written by:
 * Philipp Janda ([@siffiejoe](http://github.com/siffiejoe))
 * Tomás Guisasola Gorham ([@tomasguisasola](http://github.com/tomasguisasola))
 * Hisham Muhammad ([@hishamhm](http://github.com/hishamhm))
-
+* Renato Maia ([@renatomaia](http://github.com/renatomaia))
