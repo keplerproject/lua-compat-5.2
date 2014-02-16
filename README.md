@@ -73,12 +73,14 @@ with the rest of your code as usual.
 * `string.format` calls `tostring` on arguments for `%s`
 * `math.log` accepts base argument
 * `xpcall` takes additional arguments
+* `pcall` and `xpcall` can execute functions that yield
 * metamethods for `pairs` and `ipairs`
 * `rawlen` (but `#` still doesn't respect `__len` for tables)
 * `collectgarbage`
 * `package.searchers`
 * `package.searchpath`
 * `coroutine` functions dealing with the main coroutine 
+* `coroutine.create` accepts functions written in C
 * return code of `os.execute`
 * `io.write` and `file:write` return file handle
 * `io.lines` and `file:lines` accept format arguments (like `io.read`)
@@ -108,6 +110,9 @@ with the rest of your code as usual.
 * `luaL_setfuncs` and `luaL_newlib`
 * `luaL_setmetatable`
 * `luaL_getsubtable`
+* `luaL_traceback`
+* `luaL_fileresult`
+* `luaL_checkversion` (with empty body, only to avoid compile errors)
 
 ## What's not implemented
 
