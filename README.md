@@ -84,12 +84,14 @@ your project:
 * `string.format` calls `tostring` on arguments for `%s`
 * `math.log` accepts base argument
 * `xpcall` takes additional arguments
+* `pcall` and `xpcall` can execute functions that yield
 * metamethods for `pairs` and `ipairs`
 * `rawlen` (but `#` still doesn't respect `__len` for tables)
 * `collectgarbage`
 * `package.searchers`
 * `package.searchpath`
 * `coroutine` functions dealing with the main coroutine 
+* `coroutine.create` accepts functions written in C
 * return code of `os.execute`
 * `io.write` and `file:write` return file handle
 * `io.lines` and `file:lines` accept format arguments (like `io.read`)
@@ -120,6 +122,10 @@ your project:
 * `luaL_setfuncs`, `luaL_newlibtable`, and `luaL_newlib`
 * `luaL_setmetatable`
 * `luaL_getsubtable`
+* `luaL_traceback`
+* `luaL_fileresult`
+* `luaL_checkversion` (with empty body, only to avoid compile errors)
+* `luaL_tolstring`
 
 ## What's not implemented
 
@@ -142,16 +148,12 @@ your project:
   * `lua_version`
   * `lua_yieldk`
   * `luaL_buffinitsize`
-  * `luaL_checkversion`
   * `luaL_execresult`
-  * `luaL_fileresult`
   * `luaL_loadbufferx`
   * `luaL_loadfilex`
   * `luaL_prepbuffsize`
   * `luaL_pushresultsize`
   * `luaL_requiref`
-  * `luaL_tolstring`
-  * `luaL_traceback`
 
 ## See also
 
@@ -173,4 +175,5 @@ This package contains code written by:
 * Philipp Janda ([@siffiejoe](http://github.com/siffiejoe))
 * Tomás Guisasola Gorham ([@tomasguisasola](http://github.com/tomasguisasola))
 * Hisham Muhammad ([@hishamhm](http://github.com/hishamhm))
+* Renato Maia ([@renatomaia](http://github.com/renatomaia))
 

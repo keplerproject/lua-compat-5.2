@@ -152,6 +152,13 @@ static int test_upvalues (lua_State *L) {
   return NUP;
 }
 
+static int test_tolstring (lua_State *L) {
+  size_t len = 0;
+  luaL_tolstring(L, 1, &len);
+  lua_pushinteger(L, (int)len);
+  return 2;
+}
+
 static const luaL_Reg funcs[] = {
   { "newproxy", test_newproxy },
   { "tonumber", test_tonumber },
@@ -165,6 +172,7 @@ static const luaL_Reg funcs[] = {
   { "udata", test_udata },
   { "uservalue", test_uservalue },
   { "globals", test_globals },
+  { "tolstring", test_tolstring },
   { NULL, NULL }
 };
 

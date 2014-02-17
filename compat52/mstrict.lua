@@ -64,6 +64,8 @@ if _VERSION == "Lua 5.1" then
             for k, v in pairs(excl) do
                l_table[k] = make_copy(rawget(value, k), v)
             end
+            local pairs_iterator = make_pairs_iterator(l_table)
+            local ipairs_iterator = make_ipairs_iterator(l_table)
             return setmetatable({}, {
                __index = function(_, k)
                   local v = l_table[k]
@@ -80,10 +82,10 @@ if _VERSION == "Lua 5.1" then
                   value[k] = v
                end,
                __pairs = function()
-                  return make_pairs_iterator(l_table), value, nil
+                  return pairs_iterator, value, nil
                end,
                __ipairs = function()
-                  return make_ipairs_iterator(l_table), value, 0
+                  return ipairs_iterator, value, 0
                end,
             }), l_table
          elseif v_type == "function" then

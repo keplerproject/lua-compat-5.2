@@ -36,6 +36,9 @@
 /* declarations for Lua 5.0 only */
 #if !defined(LUA_VERSION_NUM)
 
+#define LUA_QL(x) "'" x "'"
+#define LUA_QS LUA_QL("%s")
+
 #define luaL_Reg luaL_reg
 
 #define luaL_opt(L, f, n, d) \
@@ -81,6 +84,9 @@ COMPAT52_API void lua_len (lua_State *L, int i);
 
 #define luaL_len COMPAT52_CONCAT(COMPAT52_PREFIX, L_len)
 COMPAT52_API int luaL_len (lua_State *L, int i);
+
+#define luaL_tolstring COMPAT52_CONCAT(COMPAT52_PREFIX, L_tolstring)
+COMPAT52_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
 
 #endif /* Lua 5.1 */
 
@@ -133,6 +139,15 @@ COMPAT52_API void luaL_setmetatable (lua_State *L, const char *tname);
 
 #define luaL_getsubtable COMPAT52_CONCAT(COMPAT52_PREFIX, L_getsubtable)
 COMPAT52_API int luaL_getsubtable (lua_State *L, int i, const char *name);
+
+#define luaL_traceback COMPAT52_CONCAT(COMPAT52_PREFIX, L_traceback)
+COMPAT52_API void luaL_traceback (lua_State *L, lua_State *L1, const char *msg, int level);
+
+#define luaL_fileresult COMPAT52_CONCAT(COMPAT52_PREFIX, L_fileresult)
+COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname);
+
+#define luaL_checkversion COMPAT52_CONCAT(COMPAT52_PREFIX, L_checkversion)
+COMPAT52_API void luaL_checkversion (lua_State *L);
 
 #endif /* Lua 5.0 and 5.1 */
 

@@ -180,6 +180,22 @@ do
    print("xpcall()", xpcall(func, debug.traceback, false))
    print("xpcall()", xpcall(func, debug.traceback, true))
    print("xpcall()", xpcall(func, tb, true))
+   local function func2(cb)
+     print("xpcall()", xpcall(cb, debug.traceback, "str"))
+   end
+   local function func3(cb)
+     print("pcall()", pcall( cb, "str" ))
+   end
+   local function cb(arg)
+      coroutine.yield( 2 )
+      return arg
+   end
+   local c = coroutine.wrap( func2 )
+   print("xpcall()", c(cb))
+   print("xpcall()", c())
+   local c = coroutine.wrap( func3 )
+   print("pcall()", c(cb))
+   print("pcall()", c())
 end
 ____________________________________________________________''
 do
@@ -427,6 +443,15 @@ do
       print("C API", F(mod.uservalue()))
       print("C API", mod.getupvalues())
       print("C API", mod.absindex("hi", true))
+      print("C API", mod.tolstring("string"))
+      local t = setmetatable({}, {
+        __tostring = function(v) return "mytable" end
+      })
+      print("C API", mod.tolstring( t ) )
+      local t = setmetatable({}, {
+        __tostring = function(v) return nil end
+      })
+      print("C API", pcall( mod.tolstring, t ) )
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
       print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
