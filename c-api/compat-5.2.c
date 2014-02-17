@@ -152,6 +152,7 @@ int luaL_getsubtable (lua_State *L, int i, const char *name) {
   return 0;
 }
 
+
 static int countlevels (lua_State *L) {
   lua_Debug ar;
   int li = 1, le = 1;
@@ -250,9 +251,11 @@ void luaL_traceback (lua_State *L, lua_State *L1,
   lua_concat(L, lua_gettop(L) - top);
 }
 
+
 void luaL_checkversion (lua_State *L) {
   (void)L;
 }
+
 
 int luaL_fileresult (lua_State *L, int stat, const char *fname) {
   int en = errno;  /* calls to Lua API may change this value */
@@ -266,7 +269,7 @@ int luaL_fileresult (lua_State *L, int stat, const char *fname) {
       lua_pushfstring(L, "%s: %s", fname, strerror(en));
     else
       lua_pushstring(L, strerror(en));
-    lua_pushinteger(L, en);
+    lua_pushnumber(L, (lua_Number)en);
     return 3;
   }
 }
@@ -454,6 +457,33 @@ int luaL_len (lua_State *L, int i) {
   if (!isnum)
     luaL_error(L, "object length is not a number");
   return res;
+}
+
+
+const char *luaL_tolstring (lua_State *L, int idx, size_t *len) {
+  if (!luaL_callmeta(L, idx, "__tostring")) {
+    int t = lua_type(L, idx);
+    switch (t) {
+      case LUA_TNIL:
+        lua_pushliteral(L, "nil");
+        break;
+      case LUA_TSTRING:
+      case LUA_TNUMBER:
+        lua_pushvalue(L, idx);
+        break;
+      case LUA_TBOOLEAN:
+        if (lua_toboolean(L, idx))
+          lua_pushliteral(L, "true");
+        else
+          lua_pushliteral(L, "false");
+        break;
+      default:
+        lua_pushfstring(L, "%s: %p", lua_typename(L, t),
+                                     lua_topointer(L, idx));
+        break;
+    }
+  }
+  return lua_tolstring(L, -1, len);
 }
 
 #endif /* LUA_VERSION_NUM == 501 */

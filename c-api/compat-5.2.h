@@ -4,6 +4,9 @@
 #if !defined(LUA_VERSION_NUM)
 /* Lua 5.0 */
 
+#define LUA_QL(x) "'" x "'"
+#define LUA_QS LUA_QL("%s")
+
 #define luaL_Reg luaL_reg
 
 #define luaL_opt(L, f, n, d) \
@@ -32,6 +35,7 @@ lua_Unsigned luaL_optunsigned (lua_State *L, int i, lua_Unsigned def);
 lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum);
 void lua_len (lua_State *L, int i);
 int luaL_len (lua_State *L, int i);
+const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
 
 #endif /* Lua 5.1 */
 
@@ -44,6 +48,8 @@ int luaL_len (lua_State *L, int i);
 
 #define luaL_newlib(L, l) \
   (lua_newtable((L)),luaL_setfuncs((L), (l), 0))
+
+void luaL_checkversion (lua_State *L);
 
 #endif /* Lua 5.0 *or* 5.1 */
 
@@ -58,7 +64,6 @@ void lua_setuservalue (lua_State *L, int i);
 void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup);
 void luaL_setmetatable (lua_State *L, const char *tname);
 int luaL_getsubtable (lua_State *L, int i, const char *name);
-
 void luaL_traceback (lua_State *L, lua_State *L1, const char *msg, int level);
-void luaL_checkversion (lua_State *L);
 int luaL_fileresult (lua_State *L, int stat, const char *fname);
+

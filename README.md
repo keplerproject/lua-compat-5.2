@@ -113,6 +113,7 @@ with the rest of your code as usual.
 * `luaL_traceback`
 * `luaL_fileresult`
 * `luaL_checkversion` (with empty body, only to avoid compile errors)
+* `luaL_tolstring`
 
 ## What's not implemented
 
