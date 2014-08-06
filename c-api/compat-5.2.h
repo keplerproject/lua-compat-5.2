@@ -1,6 +1,8 @@
 #ifndef COMPAT52_H_
 #define COMPAT52_H_
 
+#include <stddef.h>
+#include <stdio.h>
 #include "lua.h"
 #include "lauxlib.h"
 
@@ -94,6 +96,11 @@ COMPAT52_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
 
 /* declarations for both Lua 5.0 *and* Lua 5.1 */
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
+
+typedef struct luaL_Stream {
+  FILE *f;
+  lua_CFunction closef;
+} luaL_Stream;
 
 #define lua_pushglobaltable(L) \
   lua_pushvalue(L, LUA_GLOBALSINDEX)
