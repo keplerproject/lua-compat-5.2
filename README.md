@@ -95,6 +95,7 @@ with the rest of your code as usual.
 
 * `luaL_Reg` (for Lua 5.0)
 * `luaL_Unsigned`
+* `LUA_FILEHANDLE` (via `laulib.h`) and `luaL_Stream`
 * `luaL_addchar` (for Lua 5.0)
 * `lua_absindex`
 * `lua_tonumberx` and `lua_tointegerx`

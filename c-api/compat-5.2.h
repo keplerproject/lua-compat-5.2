@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "lua.h"
 #include "lauxlib.h"
+#include "lualib.h"
 
 #if !defined(LUA_VERSION_NUM)
 /* Lua 5.0 */
