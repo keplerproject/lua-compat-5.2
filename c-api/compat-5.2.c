@@ -348,11 +348,11 @@ typedef LUAI_INT32 LUA_INT32;
 /* the next trick should work on any machine using IEEE754 with
    a 32-bit int type */
 
-union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
+union compat52_luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 
 #if !defined(LUA_IEEEENDIAN)	/* { */
 #define LUAI_EXTRAIEEE	\
-  static const union luai_Cast ieeeendian = {-(33.0 + 6755399441055744.0)};
+  static const union compat52_luai_Cast ieeeendian = {-(33.0 + 6755399441055744.0)};
 #define LUA_IEEEENDIANLOC	(ieeeendian.l_p[1] == 33)
 #else
 #define LUA_IEEEENDIANLOC	LUA_IEEEENDIAN
@@ -361,7 +361,7 @@ union luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 
 #define lua_number2int32(i,n,t) \
   { LUAI_EXTRAIEEE \
-    volatile union luai_Cast u; u.l_d = (n) + 6755399441055744.0; \
+    volatile union compat52_luai_Cast u; u.l_d = (n) + 6755399441055744.0; \
     (i) = (t)u.l_p[LUA_IEEEENDIANLOC]; }
 
 #define lua_number2unsigned(i,n)	lua_number2int32(i, n, lua_Unsigned)
