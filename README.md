@@ -127,6 +127,7 @@ your project:
 * `luaL_fileresult`
 * `luaL_checkversion` (with empty body, only to avoid compile errors)
 * `luaL_tolstring`
+* `luaL_requiref`
 
 ## What's not implemented
 
@@ -154,7 +155,6 @@ your project:
   * `luaL_loadfilex`
   * `luaL_prepbuffsize`
   * `luaL_pushresultsize`
-  * `luaL_requiref`
 
 ## See also
 
