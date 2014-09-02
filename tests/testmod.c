@@ -159,6 +159,19 @@ static int test_tolstring (lua_State *L) {
   return 2;
 }
 
+static int my_mod (lua_State *L) {
+  lua_newtable(L);
+  lua_pushboolean(L, 1);
+  lua_setfield(L, -2, "boolean");
+  return 1;
+}
+
+static int test_requiref (lua_State *L) {
+  luaL_requiref(L, "requiref1", my_mod, 0);
+  luaL_requiref(L, "requiref2", my_mod, 1);
+  return 2;
+}
+
 static const luaL_Reg funcs[] = {
   { "newproxy", test_newproxy },
   { "tonumber", test_tonumber },
@@ -173,6 +186,7 @@ static const luaL_Reg funcs[] = {
   { "uservalue", test_uservalue },
   { "globals", test_globals },
   { "tolstring", test_tolstring },
+  { "requiref", test_requiref },
   { NULL, NULL }
 };
 

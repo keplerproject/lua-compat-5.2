@@ -91,6 +91,9 @@ COMPAT52_API int luaL_len (lua_State *L, int i);
 #define luaL_tolstring COMPAT52_CONCAT(COMPAT52_PREFIX, L_tolstring)
 COMPAT52_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
 
+#define luaL_requiref COMPAT52_CONCAT(COMPAT52_PREFIX, L_requiref)
+COMPAT52_API void luaL_requiref (lua_State *L, char const* modname, lua_CFunction openf, int glb);
+
 #endif /* Lua 5.1 */
 
 

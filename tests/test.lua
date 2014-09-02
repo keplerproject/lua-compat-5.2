@@ -452,6 +452,8 @@ do
         __tostring = function(v) return nil end
       })
       print("C API", pcall( mod.tolstring, t ) )
+      local a, b = mod.requiref()
+      print("C API", type(a), type(b), a.boolean, b.boolean, type(requiref1), type(requiref2))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
       print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))

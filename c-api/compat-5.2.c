@@ -227,7 +227,8 @@ COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
   }
 }
 
-#endif /* Lua 5.0 and Lua 5.1 */
+
+#endif /* Lua 5.0 or Lua 5.1 */
 
 
 /* definitions for Lua 5.1 only */
@@ -439,6 +440,26 @@ COMPAT52_API const char *luaL_tolstring (lua_State *L, int idx, size_t *len) {
   }
   return lua_tolstring(L, -1, len);
 }
+
+
+COMPAT52_API void luaL_requiref (lua_State *L, char const* modname,
+                                 lua_CFunction openf, int glb) {
+  luaL_checkstack(L, 3, "not enough stack slots");
+  lua_pushcfunction(L, openf);
+  lua_pushstring(L, modname);
+  lua_call(L, 1, 1);
+  lua_getglobal(L, "package");
+  lua_getfield(L, -1, "loaded");
+  lua_replace(L, -2);
+  lua_pushvalue(L, -2);
+  lua_setfield(L, -2, modname);
+  lua_pop(L, 1);
+  if (glb) {
+    lua_pushvalue(L, -1);
+    lua_setglobal(L, modname);
+  }
+}
+
 
 #endif /* Lua 5.1 only */
 
