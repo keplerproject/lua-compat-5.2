@@ -115,6 +115,7 @@ with the rest of your code as usual.
 * `luaL_fileresult`
 * `luaL_checkversion` (with empty body, only to avoid compile errors)
 * `luaL_tolstring`
+* `luaL_requiref`
 
 ## What's not implemented
 
