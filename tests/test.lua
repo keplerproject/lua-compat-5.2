@@ -453,7 +453,8 @@ do
       })
       print("C API", pcall( mod.tolstring, t ) )
       local a, b = mod.requiref()
-      print("C API", type(a), type(b), a.boolean, b.boolean, type(requiref1), type(requiref2))
+      print("C API", type(a), type(b), a.boolean, b.boolean,
+            nil==requiref1, b==requiref2, package.loaded.requiref1==a)
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
       print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
