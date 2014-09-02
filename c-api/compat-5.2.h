@@ -39,6 +39,7 @@ lua_Integer lua_tointegerx (lua_State *L, int i, int *isnum);
 void lua_len (lua_State *L, int i);
 int luaL_len (lua_State *L, int i);
 const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
+void luaL_requiref (lua_State *L, char const* modname, lua_CFunction openf, int glb);
 
 #endif /* Lua 5.1 */
 
