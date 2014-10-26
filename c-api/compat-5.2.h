@@ -101,6 +101,8 @@ COMPAT52_API void luaL_requiref (lua_State *L, char const* modname, lua_CFunctio
 /* declarations for both Lua 5.0 *and* Lua 5.1 */
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
+#define LUA_OK 0
+
 typedef struct luaL_Stream {
   FILE *f;
   lua_CFunction closef;
