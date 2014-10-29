@@ -34,6 +34,15 @@
 #define COMPAT52_CONCAT_HELPER(a, b) a##b
 #define COMPAT52_CONCAT(a, b) COMPAT52_CONCAT_HELPER(a, b)
 
+/* PUC-Rio Lua uses lconfig_h as include guard for luaconf.h,
+ * LuaJIT uses luaconf_h. If you use PUC-Rio's include files
+ * but LuaJIT's library, you will need to define the macro
+ * COMPAT52_IS_LUAJIT yourself! */
+#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501 && \
+    !defined(COMPAT52_IS_LUAJIT) && defined(luaconf_h)
+#  define COMPAT52_IS_LUAJIT
+#endif
+
 
 
 /* declarations for Lua 5.0 only */
@@ -60,6 +69,20 @@
 
 /* declarations for Lua 5.1 only */
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
+
+/* LuaJIT doesn't define these unofficial macros ... */
+#if !defined(LUAI_INT32)
+#  include <limits.h>
+#  if INT_MAX-20 < 32760
+#    define LUAI_INT32  long
+#    define LUAI_UINT32 unsigned long
+#  elif INT_MAX > 2147483640L
+#    define LUAI_INT32  int
+#    define LUAI_UINT32 unsigned int
+#  else
+#    error "could not detect suitable lua_Unsigned datatype"
+#  endif
+#endif
 
 typedef LUAI_UINT32 lua_Unsigned;
 
@@ -153,11 +176,13 @@ COMPAT52_API void luaL_setmetatable (lua_State *L, const char *tname);
 #define luaL_getsubtable COMPAT52_CONCAT(COMPAT52_PREFIX, L_getsubtable)
 COMPAT52_API int luaL_getsubtable (lua_State *L, int i, const char *name);
 
+#if !defined(COMPAT52_IS_LUAJIT)
 #define luaL_traceback COMPAT52_CONCAT(COMPAT52_PREFIX, L_traceback)
 COMPAT52_API void luaL_traceback (lua_State *L, lua_State *L1, const char *msg, int level);
 
 #define luaL_fileresult COMPAT52_CONCAT(COMPAT52_PREFIX, L_fileresult)
 COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname);
+#endif
 
 #define luaL_checkversion COMPAT52_CONCAT(COMPAT52_PREFIX, L_checkversion)
 COMPAT52_API void luaL_checkversion (lua_State *L);
