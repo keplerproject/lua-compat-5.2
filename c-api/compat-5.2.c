@@ -153,6 +153,7 @@ int luaL_getsubtable (lua_State *L, int i, const char *name) {
 }
 
 
+#if !defined(COMPAT52_IS_LUAJIT)
 static int countlevels (lua_State *L) {
   lua_Debug ar;
   int li = 1, le = 1;
@@ -250,6 +251,7 @@ void luaL_traceback (lua_State *L, lua_State *L1,
   }
   lua_concat(L, lua_gettop(L) - top);
 }
+#endif
 
 
 void luaL_checkversion (lua_State *L) {
@@ -257,6 +259,7 @@ void luaL_checkversion (lua_State *L) {
 }
 
 
+#if !defined(COMPAT52_IS_LUAJIT)
 int luaL_fileresult (lua_State *L, int stat, const char *fname) {
   int en = errno;  /* calls to Lua API may change this value */
   if (stat) {
@@ -273,6 +276,7 @@ int luaL_fileresult (lua_State *L, int stat, const char *fname) {
     return 3;
   }
 }
+#endif
 
 
 #endif /* Lua 5.0 or Lua 5.1 */

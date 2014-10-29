@@ -25,6 +25,28 @@
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
 /* Lua 5.1 */
 
+/* PUC-Rio Lua uses lconfig_h as include guard for luaconf.h,
+ * LuaJIT uses luaconf_h. If you use PUC-Rio's include files
+ * but LuaJIT's library, you will need to define the macro
+ * COMPAT52_IS_LUAJIT yourself! */
+#if !defined(COMPAT52_IS_LUAJIT) && defined(luaconf_h)
+#define COMPAT52_IS_LUAJIT
+#endif
+
+/* LuaJIT doesn't define these unofficial macros ... */
+#if !defined(LUAI_INT32)
+#include <limits.h>
+#if INT_MAX-20 < 32760
+#define LUAI_INT32  long
+#define LUAI_UINT32 unsigned long
+#elif INT_MAX > 2147483640L
+#define LUAI_INT32  int
+#define LUAI_UINT32 unsigned int
+#else
+#error "could not detect suitable lua_Unsigned datatype"
+#endif
+#endif
+
 typedef LUAI_UINT32 lua_Unsigned;
 
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
