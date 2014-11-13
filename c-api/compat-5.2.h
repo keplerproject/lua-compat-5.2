@@ -61,7 +61,7 @@
    (*(B)->p++ = (char)(c)))
 
 #define lua_createtable(L, narr, nrec) \
-  ((void)narr,(void)nrec,lua_newtable(L))
+  ((void)(narr),(void)(nrec),lua_newtable(L))
 
 #endif /* Lua 5.0 */
 
@@ -145,9 +145,9 @@ typedef struct luaL_Stream {
   (luaL_checktype(L, -1, LUA_TTABLE), lua_setfenv(L, i))
 
 #define lua_callk(L, na, nr, ctx, cont) \
-  (lua_call(L, na, nr))
+  ((void)(ctx),(void)(cont),lua_call(L, na, nr))
 #define lua_pcallk(L, na, nr, err, ctx, cont) \
-  (lua_pcall(L, na, nr, err))
+  ((void)(ctx),(void)(cont),lua_pcall(L, na, nr, err))
 
 #define lua_absindex COMPAT52_CONCAT(COMPAT52_PREFIX, _absindex)
 COMPAT52_API int lua_absindex (lua_State *L, int i);
