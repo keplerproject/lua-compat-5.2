@@ -444,6 +444,11 @@ do
       print("C API", F(mod.uservalue()))
       print("C API", mod.getupvalues())
       print("C API", mod.absindex("hi", true))
+      print("C API", mod.arith(2, 1))
+      print("C API", mod.arith(3, 5))
+      print("C API", mod.compare(1, 1))
+      print("C API", mod.compare(2, 1))
+      print("C API", mod.compare(1, 2))
       print("C API", mod.tolstring("string"))
       local t = setmetatable({}, {
         __tostring = function(v) return "mytable" end

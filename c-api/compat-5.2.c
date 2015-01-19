@@ -353,6 +353,96 @@ union compat52_luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 /********************************************************************/
 
 
+static const char compat52_arith_code[] = {
+  'l', 'o', 'c', 'a', 'l', ' ', 'o', 'p', ',', 'a', ',', 'b',
+  '=', '.', '.', '.', '\n',
+  'i', 'f', ' ', 'o', 'p', '=', '=', '0', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '+', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '1', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '-', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '2', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '*', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '3', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '/', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '4', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '%', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '5', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '^', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '6', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', '-', 'a', '\n',
+  'e', 'n', 'd', '\n', '\0'
+};
+
+COMPAT52_API void lua_arith (lua_State *L, int op) {
+  luaL_checkstack(L, 5, "not enough stack slots");
+  if (op == LUA_OPUNM)
+    lua_pushvalue(L, -1);
+  lua_rawgetp(L, LUA_REGISTRYINDEX, (void*)compat52_arith_code);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    lua_pop(L, 1);
+    if (luaL_loadbuffer(L, compat52_arith_code,
+                        sizeof(compat52_arith_code)-1, "=none"))
+      lua_error(L);
+    lua_pushvalue(L, -1);
+    lua_rawsetp(L, LUA_REGISTRYINDEX, (void*)compat52_arith_code);
+  }
+  lua_pushnumber(L, op);
+  lua_pushvalue(L, -4);
+  lua_pushvalue(L, -4);
+  lua_call(L, 3, 1);
+  lua_replace(L, -3); /* replace first operand */
+  lua_pop(L, 1); /* pop second */
+}
+
+
+static const char compat52_compare_code[] = {
+  'l', 'o', 'c', 'a', 'l', ' ', 'o', 'p', ',', 'a', ',', 'b',
+  '=', '.', '.', '.', '\n',
+  'i', 'f', ' ', 'o', 'p', '=', '=', '0', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '=', '=', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '1', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '<', 'b', '\n',
+  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '2', ' ',
+  't', 'h', 'e', 'n', '\n',
+  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '<', '=', 'b', '\n',
+  'e', 'n', 'd', '\n', '\0'
+};
+
+COMPAT52_API int lua_compare (lua_State *L, int idx1, int idx2, int op) {
+  int result = 0;
+  luaL_checkstack(L, 4, "not enough stack slots");
+  idx1 = lua_absindex(L, idx1);
+  idx2 = lua_absindex(L, idx2);
+  lua_rawgetp(L, LUA_REGISTRYINDEX, (void*)compat52_compare_code);
+  if (lua_type(L, -1) != LUA_TFUNCTION) {
+    lua_pop(L, 1);
+    if (luaL_loadbuffer(L, compat52_compare_code,
+                        sizeof(compat52_compare_code)-1, "=none"))
+      lua_error(L);
+    lua_pushvalue(L, -1);
+    lua_rawsetp(L, LUA_REGISTRYINDEX, (void*)compat52_compare_code);
+  }
+  lua_pushnumber(L, op);
+  lua_pushvalue(L, idx1);
+  lua_pushvalue(L, idx2);
+  lua_call(L, 3, 1);
+  if(lua_type(L, -1) != LUA_TBOOLEAN)
+    luaL_error(L, "invalid 'op' argument for lua_compare");
+  result = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+  return result;
+}
+
+
 COMPAT52_API void lua_pushunsigned (lua_State *L, lua_Unsigned n) {
   lua_pushnumber(L, lua_unsigned2number(n));
 }

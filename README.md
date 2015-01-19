@@ -109,6 +109,8 @@ your project:
 * `LUA_FILEHANDLE` (via `lualib.h`) and `luaL_Stream`
 * `luaL_addchar` (for Lua 5.0)
 * `lua_absindex`
+* `lua_arith`
+* `lua_compare`
 * `lua_tonumberx` and `lua_tointegerx`
 * `lua_tounsignedx` and `lua_tounsigned`
 * `luaL_checkunsigned` and `luaL_optunsigned`
@@ -142,8 +144,6 @@ your project:
 * some functions in the debug library
 * anything else missing in the Lua libraries?
 * the following C API functions/macros:
-  * `lua_arith`
-  * `lua_compare`
   * `lua_getctx`
   * `lua_upvalueid`
   * `lua_upvaluejoin`

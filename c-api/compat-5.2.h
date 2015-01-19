@@ -84,11 +84,28 @@
 #  endif
 #endif
 
+#define LUA_OPADD 0
+#define LUA_OPSUB 1
+#define LUA_OPMUL 2
+#define LUA_OPDIV 3
+#define LUA_OPMOD 4
+#define LUA_OPPOW 5
+#define LUA_OPUNM 6
+#define LUA_OPEQ 0
+#define LUA_OPLT 1
+#define LUA_OPLE 2
+
 typedef LUAI_UINT32 lua_Unsigned;
 
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
 
 #define lua_rawlen(L, i) lua_objlen(L, i)
+
+#define lua_arith COMPAT52_CONCAT(COMPAT52_PREFIX, _arith)
+COMPAT52_API void lua_arith (lua_State *L, int op);
+
+#define lua_compare COMPAT52_CONCAT(COMPAT52_PREFIX, _compare)
+COMPAT52_API int lua_compare (lua_State *L, int idx, int idx2, int op);
 
 #define lua_pushunsigned COMPAT52_CONCAT(COMPAT52_PREFIX, _pushunsigned)
 COMPAT52_API void lua_pushunsigned (lua_State *L, lua_Unsigned n);
