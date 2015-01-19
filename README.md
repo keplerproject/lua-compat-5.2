@@ -98,6 +98,8 @@ with the rest of your code as usual.
 * `LUA_FILEHANDLE` (via `lualib.h`) and `luaL_Stream`
 * `luaL_addchar` (for Lua 5.0)
 * `lua_absindex`
+* `lua_arith`
+* `lua_compare`
 * `lua_tonumberx` and `lua_tointegerx`
 * `lua_tounsignedx` and `lua_tounsigned`
 * `luaL_checkunsigned` and `luaL_optunsigned`
@@ -119,8 +121,7 @@ with the rest of your code as usual.
 
 ## What's not implemented
 
-* most C APIs
-* _ENV
+* `_ENV`
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
   to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.
