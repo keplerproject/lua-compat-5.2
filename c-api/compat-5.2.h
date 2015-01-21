@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <string.h>
 #include <stdio.h>
 #include "lua.h"
 #include "lauxlib.h"
@@ -60,6 +61,16 @@
 
 typedef LUAI_UINT32 lua_Unsigned;
 
+typedef struct luaL_Buffer_52 {
+  luaL_Buffer b; /* make incorrect code crash! */
+  char *ptr;
+  size_t nelems;
+  size_t capacity;
+  lua_State *L2;
+} luaL_Buffer_52;
+#define luaL_Buffer luaL_Buffer_52
+
+
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
 
 #define lua_rawlen(L, i) lua_objlen(L, i)
@@ -75,6 +86,46 @@ void lua_len (lua_State *L, int i);
 int luaL_len (lua_State *L, int i);
 const char *luaL_tolstring (lua_State *L, int idx, size_t *len);
 void luaL_requiref (lua_State *L, char const* modname, lua_CFunction openf, int glb);
+
+#define luaL_buffinit luaL_buffinit_52
+void luaL_buffinit (lua_State *L, luaL_Buffer_52 *B);
+
+#define luaL_prepbuffsize luaL_prepbuffsize_52
+char *luaL_prepbuffsize (luaL_Buffer_52 *B, size_t s);
+
+#define luaL_addlstring luaL_addlstring_52
+void luaL_addlstring (luaL_Buffer_52 *B, const char *s, size_t l);
+
+#define luaL_addvalue luaL_addvalue_52
+void luaL_addvalue (luaL_Buffer_52 *B);
+
+#define luaL_pushresult luaL_pushresult_52
+void luaL_pushresult (luaL_Buffer_52 *B);
+
+#undef luaL_buffinitsize
+#define luaL_buffinitsize(L, B, s) \
+  (luaL_buffinit(L, B), luaL_prepbuffsize(B, s))
+
+#undef luaL_prepbuffer
+#define luaL_prepbuffer(B) \
+  luaL_prepbuffsize(B, LUAL_BUFFERSIZE)
+
+#undef luaL_addchar
+#define luaL_addchar(B, c) \
+  ((void)((B)->nelems < (B)->capacity || luaL_prepbuffsize(B, 1)), \
+   ((B)->ptr[(B)->nelems++] = (c)))
+
+#undef luaL_addsize
+#define luaL_addsize(B, s) \
+  ((B)->nelems += (s))
+
+#undef luaL_addstring
+#define luaL_addstring(B, s) \
+  luaL_addlstring(B, s, strlen(s))
+
+#undef luaL_pushresultsize
+#define luaL_pushresultsize(B, s) \
+  (luaL_addsize(B, s), luaL_pushresult(B))
 
 #endif /* Lua 5.1 */
 

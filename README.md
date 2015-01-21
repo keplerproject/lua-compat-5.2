@@ -118,6 +118,7 @@ with the rest of your code as usual.
 * `luaL_checkversion` (with empty body, only to avoid compile errors)
 * `luaL_tolstring`
 * `luaL_requiref`
+* `luaL_buffinitsize`, `luaL_prepbuffsize`, and `luaL_pushresultsize`
 
 ## What's not implemented
 
