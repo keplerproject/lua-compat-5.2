@@ -207,6 +207,20 @@ static int test_requiref (lua_State *L) {
   return 2;
 }
 
+static int test_buffer (lua_State *L) {
+  luaL_Buffer b;
+  char *p = luaL_buffinitsize(L, &b, LUAL_BUFFERSIZE+1);
+  p[0] = 'a';
+  p[1] = 'b';
+  luaL_addsize(&b, 2);
+  luaL_addstring(&b, "c");
+  lua_pushliteral(L, "d");
+  luaL_addvalue(&b);
+  luaL_addchar(&b, 'e');
+  luaL_pushresult(&b);
+  return 1;
+}
+
 static const luaL_Reg funcs[] = {
   { "newproxy", test_newproxy },
   { "compare", test_compare },
@@ -224,6 +238,7 @@ static const luaL_Reg funcs[] = {
   { "globals", test_globals },
   { "tolstring", test_tolstring },
   { "requiref", test_requiref },
+  { "buffer", test_buffer },
   { NULL, NULL }
 };
 
