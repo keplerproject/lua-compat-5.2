@@ -4,7 +4,7 @@ version = "5.2.3-1"
 
 source = {
    url = "git://github.com/hishamhm/lua-compat-5.2.git",
-   branch = "5.2.3",
+   tag = "bitlib-5.2.3",
 }
 
 description = {
