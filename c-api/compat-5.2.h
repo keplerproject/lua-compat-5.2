@@ -107,6 +107,14 @@ typedef struct luaL_Buffer_52 {
 } luaL_Buffer_52;
 #define luaL_Buffer luaL_Buffer_52
 
+typedef struct luaL_Stream {
+  FILE *f;
+  /* The following field is for LuaJIT which adds a uint32_t field
+   * to file handles. */
+  lua_Unsigned type;
+  lua_CFunction closef;
+} luaL_Stream;
+
 
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
 
@@ -193,11 +201,6 @@ COMPAT52_API void luaL_pushresult (luaL_Buffer_52 *B);
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
 #define LUA_OK 0
-
-typedef struct luaL_Stream {
-  FILE *f;
-  lua_CFunction closef;
-} luaL_Stream;
 
 #define lua_pushglobaltable(L) \
   lua_pushvalue(L, LUA_GLOBALSINDEX)
