@@ -471,7 +471,7 @@ int lua_compare (lua_State *L, int idx1, int idx2, int op) {
       idx2 = lua_absindex(L, idx2);
       lua_pushvalue(L, idx1);
       lua_pushvalue(L, idx2);
-      compat52_call_lua(L, (void*)compat52_compare_code,
+      compat52_call_lua(L, compat52_compare_code,
                         sizeof(compat52_compare_code)-1, 2, 1);
       result = lua_toboolean(L, -1);
       lua_pop(L, 1);
