@@ -15,12 +15,12 @@
 /********************************************************************/
 #if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501
 #include "compat-5.2.c"
-#undef LUAMOD_API
-#define LUAMOD_API extern
 #elif defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 503
 #define luaL_checkunsigned(L, n) ((lua_Unsigned)luaL_checkinteger((L), (n)))
 #define lua_pushunsigned(L, n) (lua_pushinteger(L, (lua_Integer)(n)))
 #endif
+#undef LUAMOD_API
+#define LUAMOD_API extern
 /********************************************************************/
 
 
