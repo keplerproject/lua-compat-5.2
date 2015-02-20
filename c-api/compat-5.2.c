@@ -395,7 +395,7 @@ static const char compat52_arith_code[] = {
 };
 
 COMPAT52_API void lua_arith (lua_State *L, int op) {
-  if (op < LUA_OPADD && op > LUA_OPUNM)
+  if (op < LUA_OPADD || op > LUA_OPUNM)
     luaL_error(L, "invalid 'op' argument for lua_arith");
   luaL_checkstack(L, 5, "not enough stack slots");
   if (op == LUA_OPUNM)
