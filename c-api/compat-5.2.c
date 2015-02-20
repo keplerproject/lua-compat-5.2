@@ -414,30 +414,15 @@ static void compat52_call_lua (lua_State *L, char const code[], size_t len,
 }
 
 static const char compat52_arith_code[] = {
-  'l', 'o', 'c', 'a', 'l', ' ', 'o', 'p', ',', 'a', ',', 'b',
-  '=', '.', '.', '.', '\n',
-  'i', 'f', ' ', 'o', 'p', '=', '=', '0', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '+', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '1', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '-', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '2', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '*', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '3', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '/', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '4', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '%', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '5', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '^', 'b', '\n',
-  'e', 'l', 's', 'e', 'i', 'f', ' ', 'o', 'p', '=', '=', '6', ' ',
-  't', 'h', 'e', 'n', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', '-', 'a', '\n',
-  'e', 'n', 'd', '\n', '\0'
+  "local op,a,b=...\n"
+  "if op==0 then return a+b\n"
+  "elseif op==1 then return a-b\n"
+  "elseif op==2 then return a*b\n"
+  "elseif op==3 then return a/b\n"
+  "elseif op==4 then return a%b\n"
+  "elseif op==5 then return a^b\n"
+  "elseif op==6 then return -a\n"
+  "end\n"
 };
 
 void lua_arith (lua_State *L, int op) {
@@ -454,8 +439,8 @@ void lua_arith (lua_State *L, int op) {
 
 
 static const char compat52_compare_code[] = {
-  'l', 'o', 'c', 'a', 'l', ' ', 'a', ',', 'b', '=', '.', '.', '.', '\n',
-  'r', 'e', 't', 'u', 'r', 'n', ' ', 'a', '<', '=', 'b', '\n', '\0'
+  "local a,b=...\n"
+  "return a<=b\n"
 };
 
 int lua_compare (lua_State *L, int idx1, int idx2, int op) {
