@@ -464,8 +464,6 @@ do
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
       print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
-      print("debug.setuservalue()", F(debug.setuservalue(ud, nil)))
-      print("debug.getuservalue()", F(debug.getuservalue(ud)))
    end
 end
 ____________________________________________________________''
