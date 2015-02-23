@@ -20,6 +20,8 @@ It includes:
   of Lua 5.2 that do not exist in Lua 5.1, making it easier to write
   C code that compiles with both versions of liblua.
 
+Both the Lua module and the C files should also work with LuaJIT.
+
 ## How to use it
 
 ### Lua module
