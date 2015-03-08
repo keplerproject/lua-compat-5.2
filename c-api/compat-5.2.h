@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "lua.h"
 #include "lauxlib.h"
-#include "lualib.h"
 
 #if !defined(LUA_VERSION_NUM)
 /* Lua 5.0 */
@@ -69,14 +68,6 @@ typedef struct luaL_Buffer_52 {
   lua_State *L2;
 } luaL_Buffer_52;
 #define luaL_Buffer luaL_Buffer_52
-
-typedef struct luaL_Stream {
-  FILE *f;
-  /* The following field is for LuaJIT which adds a uint32_t field
-   * to file handles. */
-  lua_Unsigned type;
-  lua_CFunction closef;
-} luaL_Stream;
 
 
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
