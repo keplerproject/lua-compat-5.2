@@ -1,0 +1,4 @@
+[submodule "doc"]
+	path = doc
+	url = https://github.com/keplerproject/lua-compat-5.2.wiki.git
+	branch = doc
