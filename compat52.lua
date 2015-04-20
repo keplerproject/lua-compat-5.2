@@ -10,12 +10,13 @@ if _VERSION == "Lua 5.1" then
    local is_luajit52 = is_luajit and
       #setmetatable({}, { __len = function() return 1 end }) == 1
 
+   local weak_meta = { __mode = "kv" }
    -- table that maps each running coroutine to the coroutine that resumed it
    -- this is used to build complete tracebacks when "coroutine-friendly" pcall
    -- is used.
-   local pcall_previous = {}
-   local pcall_callOf = {}
-   local xpcall_running = {}
+   local pcall_previous = setmetatable({}, weak_meta)
+   local pcall_callOf = setmetatable({}, weak_meta)
+   local xpcall_running = setmetatable({}, weak_meta)
    local coroutine_running = coroutine.running
 
    -- the most powerful getmetatable we can get (preferably from debug)
@@ -343,7 +344,7 @@ if _VERSION == "Lua 5.1" then
       return result
    end
 
-   local pcall_mainOf = {}
+   local pcall_mainOf = setmetatable({}, weak_meta)
 
    if not is_luajit52 then
       coroutine.running = function()
