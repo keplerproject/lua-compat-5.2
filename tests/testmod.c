@@ -34,6 +34,41 @@ static int test_absindex (lua_State *L) {
   return i;
 }
 
+static int test_compare (lua_State *L) {
+  luaL_checknumber(L, 1);
+  luaL_checknumber(L, 2);
+  lua_settop(L, 2);
+  lua_pushboolean(L, lua_compare(L, 1, 2, LUA_OPEQ));
+  lua_pushboolean(L, lua_compare(L, 1, 2, LUA_OPLT));
+  lua_pushboolean(L, lua_compare(L, 1, 2, LUA_OPLE));
+  return 3;
+}
+
+static int test_arith (lua_State *L) {
+  lua_settop(L, 2);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPADD);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPSUB);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPMUL);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPDIV);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPMOD);
+  lua_pushvalue(L, 1);
+  lua_pushvalue(L, 2);
+  lua_arith(L, LUA_OPPOW);
+  lua_pushvalue(L, 1);
+  lua_arith(L, LUA_OPUNM);
+  return lua_gettop(L)-2;
+}
+
 static int test_globals (lua_State *L) {
   lua_pushglobaltable(L);
   return 1;
@@ -163,8 +198,37 @@ static int test_tolstring (lua_State *L) {
   return 2;
 }
 
+static int my_mod (lua_State *L) {
+  lua_newtable(L);
+  lua_pushboolean(L, 1);
+  lua_setfield(L, -2, "boolean");
+  return 1;
+}
+
+static int test_requiref (lua_State *L) {
+  luaL_requiref(L, "requiref1", my_mod, 0);
+  luaL_requiref(L, "requiref2", my_mod, 1);
+  return 2;
+}
+
+static int test_buffer (lua_State *L) {
+  luaL_Buffer b;
+  char *p = luaL_buffinitsize(L, &b, LUAL_BUFFERSIZE+1);
+  p[0] = 'a';
+  p[1] = 'b';
+  luaL_addsize(&b, 2);
+  luaL_addstring(&b, "c");
+  lua_pushliteral(L, "d");
+  luaL_addvalue(&b);
+  luaL_addchar(&b, 'e');
+  luaL_pushresult(&b);
+  return 1;
+}
+
 static const luaL_Reg funcs[] = {
   { "newproxy", test_newproxy },
+  { "compare", test_compare },
+  { "arith", test_arith },
   { "tonumber", test_tonumber },
   { "tointeger", test_tointeger },
   { "unsigned", test_unsigned },
@@ -177,6 +241,8 @@ static const luaL_Reg funcs[] = {
   { "uservalue", test_uservalue },
   { "globals", test_globals },
   { "tolstring", test_tolstring },
+  { "requiref", test_requiref },
+  { "buffer", test_buffer },
   { NULL, NULL }
 };
 

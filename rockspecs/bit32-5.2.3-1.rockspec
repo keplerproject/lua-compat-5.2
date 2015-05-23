@@ -1,31 +1,31 @@
 package = "bit32"
 
-version = "scm-1"
+version = "5.2.3-1"
 
 source = {
-   url = "git://github.com/keplerproject/lua-compat-5.2.git",
-   branch = "master",
+   url = "git://github.com/hishamhm/lua-compat-5.2.git",
+   tag = "bitlib-5.2.3",
 }
 
 description = {
    summary = "Lua 5.2 bit manipulation library",
    detailed = [[
-      bit32 is the native Lua 5.2 bit manipulation library, in the version
-      from Lua 5.3; it is compatible with Lua 5.1, 5.2 and 5.3.
+      bit32 is the native Lua 5.2 bit manipulation library,
+      backported to Lua 5.1
    ]],
    license = "MIT/X11",
    homepage = "http://www.lua.org/manual/5.2/manual.html#6.7",
 }
 
 dependencies = {
-   "lua >= 5.1, <= 5.3"
+   "lua >= 5.1, < 5.2"
 }
 
 build = {
    type = "builtin",
    modules = {
       bit32 = {
-         sources = { "lbitlib.c" },
+         sources = { "lbitlib.c", "c-api/compat-5.2.c" },
          incdirs = { "c-api" },
       }
    }

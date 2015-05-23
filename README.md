@@ -20,6 +20,8 @@ It includes:
   of Lua 5.2 that do not exist in Lua 5.1, making it easier to write
   C code that compiles with both versions of liblua.
 
+Both the Lua module and the C files should also work with LuaJIT.
+
 ## How to use it
 
 ### Lua module
@@ -68,26 +70,38 @@ with the rest of your code as usual.
 
 * `load` and `loadfile`
 * `table.pack` and `table.unpack`
-* `string` patterns may contain embedded zeros
+* `string` patterns may contain embedded zeros (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/pattern_matching))
 * `string.rep` accepts sep argument
 * `string.format` calls `tostring` on arguments for `%s`
 * `math.log` accepts base argument
 * `xpcall` takes additional arguments
 * `pcall` and `xpcall` can execute functions that yield
-* metamethods for `pairs` and `ipairs`
+* metamethods for `pairs` and `ipairs` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/pairs), and
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/ipairs))
 * `rawlen` (but `#` still doesn't respect `__len` for tables)
-* `collectgarbage`
+* `collectgarbage` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/collectgarbage))
 * `package.searchers`
-* `package.searchpath`
-* `coroutine` functions dealing with the main coroutine 
+* `package.searchpath` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/package.searchpath))
+* `coroutine` functions dealing with the main coroutine
 * `coroutine.create` accepts functions written in C
-* return code of `os.execute`
+* return code of `os.execute` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/os.execute))
 * `io.write` and `file:write` return file handle
 * `io.lines` and `file:lines` accept format arguments (like `io.read`)
+  (but see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/io.lines), and
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/file.lines)).
 * `bit32` (actual backport from the `bit32` library from Lua 5.2,
   also available as a stand-alone rock in the LuaRocks repository)
 * `debug.setmetatable` returns object
-* `debug.getuservalue` and `debug.setuservalue`
+* `debug.getuservalue` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/debug.getuservalue))
+* `debug.setuservalue` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/debug.setuservalue))
 * optional strict mode which removes functions removed or deprecated in
   Lua 5.2, such as `setfenv` and `getfenv`
 
@@ -97,13 +111,18 @@ with the rest of your code as usual.
 * `luaL_Unsigned`
 * `luaL_addchar` (for Lua 5.0)
 * `lua_absindex`
+* `lua_arith`
+* `lua_compare`
 * `lua_tonumberx` and `lua_tointegerx`
 * `lua_tounsignedx` and `lua_tounsigned`
 * `luaL_checkunsigned` and `luaL_optunsigned`
 * `lua_len`, `lua_rawlen`, and `luaL_len`
 * `lua_rawgetp` and `lua_rawsetp`
 * `lua_copy`
-* `lua_getuservalue` and `lua_setuservalue`
+* `lua_getuservalue` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/lua_getuservalue))
+* `lua_setuservalue` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/lua_setuservalue))
 * `lua_pushglobaltable`
 * `lua_pushunsigned`
 * `luaL_testudata`
@@ -112,13 +131,17 @@ with the rest of your code as usual.
 * `luaL_getsubtable`
 * `luaL_traceback`
 * `luaL_fileresult`
-* `luaL_checkversion` (with empty body, only to avoid compile errors)
+* `luaL_checkversion` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/luaL_checkversion))
 * `luaL_tolstring`
+* `luaL_requiref` (see
+  [here](https://github.com/keplerproject/lua-compat-5.2/wiki/luaL_requiref))
+* `luaL_buffinitsize`, `luaL_prepbuffsize`, and `luaL_pushresultsize`
+  (see [here](https://github.com/keplerproject/lua-compat-5.2/wiki/luaL_Buffer))
 
 ## What's not implemented
 
-* most C APIs
-* _ENV
+* `_ENV`
 * obviously, this does not turn Lua 5.1 into Lua 5.2: syntactic changes
   to the core language, such as the `goto` statement, and semantic
   changes such as ephemeron support for weak tables, remain unavailable.

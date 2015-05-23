@@ -1,10 +1,10 @@
 package = "bit32"
 
-version = "scm-1"
+version = "5.3.0-1"
 
 source = {
    url = "git://github.com/keplerproject/lua-compat-5.2.git",
-   branch = "master",
+   tag = "bitlib-5.3.0",
 }
 
 description = {
