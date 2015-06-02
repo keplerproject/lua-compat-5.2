@@ -540,8 +540,8 @@ if _VERSION == "Lua 5.1" then
             ["\""] = "\\\""
          }
 
-         local function addquoted(c)
-            return addqt[c] or string_format("\\%03d", c:byte())
+         local function addquoted(c, d)
+            return (addqt[c] or string_format(d~= "" and "\\%03d" or "\\%d", c:byte()))..d
          end
 
          function string.format(fmt, ...)
@@ -553,7 +553,7 @@ if _VERSION == "Lua 5.1" then
                   if kind == "s" then
                      args[i] = _tostring(args[i])
                   elseif kind == "q" then
-                     args[i] = '"'..string_gsub(args[i], "[%z%c\\\"\n]", addquoted)..'"'
+                     args[i] = '"'..string_gsub(args[i], "([%z%c\\\"\n])(%d?)", addquoted)..'"'
                      return lead.."%"..mods.."s"
                   end
                end
