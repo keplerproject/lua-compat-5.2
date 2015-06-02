@@ -157,4 +157,5 @@ void luaL_setmetatable (lua_State *L, const char *tname);
 int luaL_getsubtable (lua_State *L, int i, const char *name);
 void luaL_traceback (lua_State *L, lua_State *L1, const char *msg, int level);
 int luaL_fileresult (lua_State *L, int stat, const char *fname);
+int luaL_execresult (lua_State *L, int stat);
 
