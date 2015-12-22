@@ -282,7 +282,7 @@ int luaL_fileresult (lua_State *L, int stat, const char *fname) {
      defined(__TOS_AIX__) || defined(_SYSTYPE_BSD))
 /* some form of unix; check feature macros in unistd.h for details */
 #  include <unistd.h>
-/* check poisix version; the relevant include files and macros probably
+/* check posix version; the relevant include files and macros probably
  * were available before 2001, but I'm not sure */
 #  if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
 #    include <sys/wait.h>
