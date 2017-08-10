@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include "lua.h"
 #include "lauxlib.h"
-#include "lualib.h"
 
 
 #if defined(COMPAT52_PREFIX)
@@ -19,10 +18,9 @@
 #  undef COMPAT52_INCLUDE_SOURCE
 #else /* COMPAT52_PREFIX */
 /* - make all functions static and include the source.
- * - don't mess with the symbol names of functions
  * - compat-5.2.c doesn't need to be compiled (and linked) separately
  */
-#  define COMPAT52_PREFIX lua
+#  define COMPAT52_PREFIX compat52
 #  undef COMPAT52_API
 #  if defined(__GNUC__) || defined(__clang__)
 #    define COMPAT52_API __attribute__((__unused__)) static
@@ -34,16 +32,6 @@
 
 #define COMPAT52_CONCAT_HELPER(a, b) a##b
 #define COMPAT52_CONCAT(a, b) COMPAT52_CONCAT_HELPER(a, b)
-
-/* PUC-Rio Lua uses lconfig_h as include guard for luaconf.h,
- * LuaJIT uses luaconf_h. If you use PUC-Rio's include files
- * but LuaJIT's library, you will need to define the macro
- * COMPAT52_IS_LUAJIT yourself! */
-#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM == 501 && \
-    !defined(COMPAT52_IS_LUAJIT) && defined(luaconf_h)
-#  define COMPAT52_IS_LUAJIT
-#endif
-
 
 
 /* declarations for Lua 5.0 only */
@@ -85,16 +73,36 @@
 #  endif
 #endif
 
-#define LUA_OPADD 0
-#define LUA_OPSUB 1
-#define LUA_OPMUL 2
-#define LUA_OPDIV 3
-#define LUA_OPMOD 4
-#define LUA_OPPOW 5
-#define LUA_OPUNM 6
-#define LUA_OPEQ 0
-#define LUA_OPLT 1
-#define LUA_OPLE 2
+#ifndef LUA_OPADD
+#  define LUA_OPADD 0
+#endif
+#ifndef LUA_OPSUB
+#  define LUA_OPSUB 1
+#endif
+#ifndef LUA_OPMUL
+#  define LUA_OPMUL 2
+#endif
+#ifndef LUA_OPDIV
+#  define LUA_OPDIV 3
+#endif
+#ifndef LUA_OPMOD
+#  define LUA_OPMOD 4
+#endif
+#ifndef LUA_OPPOW
+#  define LUA_OPPOW 5
+#endif
+#ifndef LUA_OPUNM
+#  define LUA_OPUNM 6
+#endif
+#ifndef LUA_OPEQ
+#  define LUA_OPEQ 0
+#endif
+#ifndef LUA_OPLT
+#  define LUA_OPLT 1
+#endif
+#ifndef LUA_OPLE
+#  define LUA_OPLE 2
+#endif
 
 typedef LUAI_UINT32 lua_Unsigned;
 
@@ -106,14 +114,6 @@ typedef struct luaL_Buffer_52 {
   lua_State *L2;
 } luaL_Buffer_52;
 #define luaL_Buffer luaL_Buffer_52
-
-typedef struct luaL_Stream {
-  FILE *f;
-  /* The following field is for LuaJIT which adds a uint32_t field
-   * to file handles. */
-  lua_Unsigned type;
-  lua_CFunction closef;
-} luaL_Stream;
 
 
 #define lua_tounsigned(L, i) lua_tounsignedx(L, i, NULL)
@@ -200,15 +200,21 @@ COMPAT52_API void luaL_pushresult (luaL_Buffer_52 *B);
 /* declarations for both Lua 5.0 *and* Lua 5.1 */
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM == 501
 
-#define LUA_OK 0
+#ifndef LUA_OK
+#  define LUA_OK 0
+#endif
 
 #define lua_pushglobaltable(L) \
   lua_pushvalue(L, LUA_GLOBALSINDEX)
 
-#define luaL_newlibtable(L, l) \
+#ifndef luaL_newlibtable
+#  define luaL_newlibtable(L, l) \
   (lua_createtable(L, 0, sizeof(l)/sizeof(*(l))-1))
-#define luaL_newlib(L, l) \
+#endif
+#ifndef luaL_newlib
+#  define luaL_newlib(L, l) \
   (luaL_newlibtable(L, l),luaL_setfuncs(L, l, 0))
+#endif
 
 #define lua_getuservalue(L, i) \
   (lua_getfenv(L, i))
@@ -247,16 +253,17 @@ COMPAT52_API void luaL_setmetatable (lua_State *L, const char *tname);
 #define luaL_getsubtable COMPAT52_CONCAT(COMPAT52_PREFIX, L_getsubtable)
 COMPAT52_API int luaL_getsubtable (lua_State *L, int i, const char *name);
 
-#if !defined(COMPAT52_IS_LUAJIT)
 #define luaL_traceback COMPAT52_CONCAT(COMPAT52_PREFIX, L_traceback)
 COMPAT52_API void luaL_traceback (lua_State *L, lua_State *L1, const char *msg, int level);
 
 #define luaL_fileresult COMPAT52_CONCAT(COMPAT52_PREFIX, L_fileresult)
 COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname);
-#endif
 
 #define luaL_checkversion COMPAT52_CONCAT(COMPAT52_PREFIX, L_checkversion)
 COMPAT52_API void luaL_checkversion (lua_State *L);
+
+#define luaL_execresult COMPAT52_CONCAT(COMPAT52_PREFIX, L_execresult)
+COMPAT52_API int luaL_execresult (lua_State *L, int stat);
 
 #endif /* Lua 5.0 and 5.1 */
 

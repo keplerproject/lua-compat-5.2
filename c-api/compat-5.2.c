@@ -106,8 +106,7 @@ COMPAT52_API int luaL_getsubtable (lua_State *L, int i, const char *name) {
 }
 
 
-#if !defined(COMPAT52_IS_LUAJIT)
-static int LUA_countlevels (lua_State *L) {
+static int compat52_countlevels (lua_State *L) {
   lua_Debug ar;
   int li = 1, le = 1;
   /* find an upper bound */
@@ -121,7 +120,7 @@ static int LUA_countlevels (lua_State *L) {
   return le - 1;
 }
 
-static int LUA_findfield (lua_State *L, int objidx, int level) {
+static int compat52_findfield (lua_State *L, int objidx, int level) {
   if (level == 0 || !lua_istable(L, -1))
     return 0;  /* not found */
   lua_pushnil(L);  /* start 'next' loop */
@@ -131,7 +130,7 @@ static int LUA_findfield (lua_State *L, int objidx, int level) {
         lua_pop(L, 1);  /* remove value (but keep name) */
         return 1;
       }
-      else if (LUA_findfield(L, objidx, level - 1)) {  /* try recursively */
+      else if (compat52_findfield(L, objidx, level - 1)) {  /* try recursively */
         lua_remove(L, -2);  /* remove table (but keep name) */
         lua_pushliteral(L, ".");
         lua_insert(L, -2);  /* place '.' between the two names */
@@ -144,11 +143,11 @@ static int LUA_findfield (lua_State *L, int objidx, int level) {
   return 0;  /* not found */
 }
 
-static int LUA_pushglobalfuncname (lua_State *L, lua_Debug *ar) {
+static int compat52_pushglobalfuncname (lua_State *L, lua_Debug *ar) {
   int top = lua_gettop(L);
   lua_getinfo(L, "f", ar);  /* push function */
   lua_pushvalue(L, LUA_GLOBALSINDEX);
-  if (LUA_findfield(L, top + 1, 2)) {
+  if (compat52_findfield(L, top + 1, 2)) {
     lua_copy(L, -1, top + 1);  /* move name to proper place */
     lua_pop(L, 2);  /* remove pushed values */
     return 1;
@@ -159,13 +158,13 @@ static int LUA_pushglobalfuncname (lua_State *L, lua_Debug *ar) {
   }
 }
 
-static void LUA_pushfuncname (lua_State *L, lua_Debug *ar) {
+static void compat52_pushfuncname (lua_State *L, lua_Debug *ar) {
   if (*ar->namewhat != '\0')  /* is there a name? */
     lua_pushfstring(L, "function " LUA_QS, ar->name);
   else if (*ar->what == 'm')  /* main? */
       lua_pushliteral(L, "main chunk");
   else if (*ar->what == 'C') {
-    if (LUA_pushglobalfuncname(L, ar)) {
+    if (compat52_pushglobalfuncname(L, ar)) {
       lua_pushfstring(L, "function " LUA_QS, lua_tostring(L, -1));
       lua_remove(L, -2);  /* remove name */
     }
@@ -176,21 +175,21 @@ static void LUA_pushfuncname (lua_State *L, lua_Debug *ar) {
     lua_pushfstring(L, "function <%s:%d>", ar->short_src, ar->linedefined);
 }
 
-#define LUA_LEVELS1 12  /* size of the first part of the stack */
-#define LUA_LEVELS2 10  /* size of the second part of the stack */
+#define COMPAT52_LEVELS1 12  /* size of the first part of the stack */
+#define COMPAT52_LEVELS2 10  /* size of the second part of the stack */
 
 COMPAT52_API void luaL_traceback (lua_State *L, lua_State *L1,
                                   const char *msg, int level) {
   lua_Debug ar;
   int top = lua_gettop(L);
-  int numlevels = LUA_countlevels(L1);
-  int mark = (numlevels > LUA_LEVELS1 + LUA_LEVELS2) ? LUA_LEVELS1 : 0;
+  int numlevels = compat52_countlevels(L1);
+  int mark = (numlevels > COMPAT52_LEVELS1 + COMPAT52_LEVELS2) ? COMPAT52_LEVELS1 : 0;
   if (msg) lua_pushfstring(L, "%s\n", msg);
   lua_pushliteral(L, "stack traceback:");
   while (lua_getstack(L1, level++, &ar)) {
     if (level == mark) {  /* too many levels? */
       lua_pushliteral(L, "\n\t...");  /* add a '...' */
-      level = numlevels - LUA_LEVELS2;  /* and skip to last ones */
+      level = numlevels - COMPAT52_LEVELS2;  /* and skip to last ones */
     }
     else {
       lua_getinfo(L1, "Slnt", &ar);
@@ -198,13 +197,12 @@ COMPAT52_API void luaL_traceback (lua_State *L, lua_State *L1,
       if (ar.currentline > 0)
         lua_pushfstring(L, "%d:", ar.currentline);
       lua_pushliteral(L, " in ");
-      LUA_pushfuncname(L, &ar);
+      compat52_pushfuncname(L, &ar);
       lua_concat(L, lua_gettop(L) - top);
     }
   }
   lua_concat(L, lua_gettop(L) - top);
 }
-#endif
 
 
 COMPAT52_API void luaL_checkversion (lua_State *L) {
@@ -212,7 +210,6 @@ COMPAT52_API void luaL_checkversion (lua_State *L) {
 }
 
 
-#if !defined(COMPAT52_IS_LUAJIT)
 COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
   int en = errno;  /* calls to Lua API may change this value */
   if (stat) {
@@ -229,8 +226,42 @@ COMPAT52_API int luaL_fileresult (lua_State *L, int stat, const char *fname) {
     return 3;
   }
 }
+
+#if !defined(l_inspectstat) && \
+    (defined(unix) || defined(__unix) || defined(__unix__) || \
+     defined(__TOS_AIX__) || defined(_SYSTYPE_BSD))
+/* some form of unix; check feature macros in unistd.h for details */
+#  include <unistd.h>
+/* check posix version; the relevant include files and macros probably
+ * were available before 2001, but I'm not sure */
+#  if defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#    include <sys/wait.h>
+#    define l_inspectstat(stat,what) \
+  if (WIFEXITED(stat)) { stat = WEXITSTATUS(stat); } \
+  else if (WIFSIGNALED(stat)) { stat = WTERMSIG(stat); what = "signal"; }
+#  endif
 #endif
 
+/* provide default (no-op) version */
+#if !defined(l_inspectstat)
+#  define l_inspectstat(stat,what) ((void)0)
+#endif
+
+int luaL_execresult (lua_State *L, int stat) {
+  const char *what = "exit";
+  if (stat == -1)
+    return luaL_fileresult(L, 0, NULL);
+  else {
+    l_inspectstat(stat, what);
+    if (*what == 'e' && stat == 0)
+      lua_pushboolean(L, 1);
+    else
+      lua_pushnil(L);
+    lua_pushstring(L, what);
+    lua_pushnumber(L, (lua_Number)stat);
+    return 3;
+  }
+}
 
 #endif /* Lua 5.0 or Lua 5.1 */
 
@@ -334,9 +365,9 @@ union compat52_luai_Cast { double l_d; LUA_INT32 l_p[2]; };
 /* the following definition assures proper modulo behavior */
 #if defined(LUA_NUMBER_DOUBLE) || defined(LUA_NUMBER_FLOAT)
 #include <math.h>
-#define LUA_SUPUNSIGNED	((lua_Number)(~(lua_Unsigned)0) + 1)
+#define COMPAT52_SUPUNSIGNED	((lua_Number)(~(lua_Unsigned)0) + 1)
 #define lua_number2unsigned(i,n)  \
-	((i)=(lua_Unsigned)((n) - floor((n)/LUA_SUPUNSIGNED)*LUA_SUPUNSIGNED))
+	((i)=(lua_Unsigned)((n) - floor((n)/COMPAT52_SUPUNSIGNED)*COMPAT52_SUPUNSIGNED))
 #else
 #define lua_number2unsigned(i,n)	((i)=(lua_Unsigned)(n))
 #endif

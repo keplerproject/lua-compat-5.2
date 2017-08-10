@@ -326,7 +326,7 @@ do
          return _tostring(v)
       end
    end
-   print("string.format()", string.format("%q", "\"\\\0000\0010\r0\n0\t0\""))
+   print("string.format()", string.format("%q", "\"\\\0000\0010\002\r\n0\t0\""))
    print("string.format()", string.format("%12.3fx%%sxx%.6s", 3.1, {}))
    print("string.format()", string.format("%-3f %%%s %%s", 3.1, true))
    print("string.format()", string.format("% 3.2g %%d %%%s", 3.1, nil))
@@ -461,6 +461,9 @@ do
       local a, b = mod.requiref()
       print("C API", type(a), type(b), a.boolean, b.boolean, type(requiref1), type(requiref2))
       print("C API", mod.buffer())
+      print("C API", mod.exec("exit 0"))
+      print("C API", mod.exec("exit 1"))
+      print("C API", mod.exec("exit 25"))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
       print("debug.setuservalue()", F(debug.setuservalue(ud, {})))
       print("debug.getuservalue()", F(debug.getuservalue(ud)))
