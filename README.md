@@ -1,3 +1,6 @@
+<b><span style="color: red">This repository is now archived. Consider using</span>
+[http://github.com/lunarmodules/lua-compat-5.3](lua-compat-5.3)</b>
+
 # lua-compat-5.2
 
 Lua-5.2-style APIs for Lua 5.1.
